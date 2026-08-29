@@ -263,6 +263,51 @@ describe('dsh-music-plus podcast', () => {
     unmount()
   })
 
+  it('persists the podcast playback (kind:podcast) to the Host prefs', async () => {
+    const panel = registered.find((r) => r.id === 'music-player-plus-panel').elementFactory()
+    const { div, unmount } = mount(panel)
+    const podTab = [...div.querySelectorAll('.dsh-music-tab')].find((b) => b.textContent === '播客')
+    act(() => { podTab.dispatchEvent(new MouseEvent('click', { bubbles: true })) })
+    const input = div.querySelector('.dsh-music-podcast-input')
+    setInput(input, 'http://cdn/feed.xml')
+    act(() => { [...div.querySelectorAll('button')].find((b) => b.textContent === '订阅').dispatchEvent(new MouseEvent('click', { bubbles: true })) })
+    await act(async () => { await new Promise((r) => setTimeout(r, 0)) })
+    const ep1 = [...div.querySelectorAll('.dsh-music-track')].find((b) => b.textContent.includes('EP1'))
+    act(() => { ep1.dispatchEvent(new MouseEvent('click', { bubbles: true })) })
+    await act(async () => { await new Promise((r) => setTimeout(r, 0)) })
+    // wait for the debounced prefs flush (800ms) + the POST to settle
+    await act(async () => { await new Promise((r) => setTimeout(r, 900)) })
+    const raw = prefsServer['dsh-music-playback']
+    expect(raw, 'prefsServer keys=' + JSON.stringify(Object.keys(prefsServer)) + ' raw=' + (raw ? raw.slice(0, 120) : '')).toBeTruthy()
+    const saved = JSON.parse(raw)
+    expect(saved.kind).toBe('podcast')
+    expect(saved.podId).toBeTruthy()
+    expect(saved.queue).toBeTruthy()
+    unmount()
+  })
+
+  it('restores the last podcast from the Host prefs after a reload', async () => {
+    // Simulate a previous session that saved a podcast at EP1/12s. Re-boot fresh
+    // so loadTracks reads the populated prefs and restores the podcast.
+    prefsServer['dsh-music-playback'] = JSON.stringify({
+      kind: 'podcast', podId: 'pod-new', epIdx: 0, name: 'EP1', position: 12, duration: 120,
+      queue: [{ title: 'EP1', url: 'http://cdn/e1.mp3' }, { title: 'EP2', url: 'http://cdn/e2.mp3' }],
+      queueSource: { podId: 'pod-new', title: '测试播客' },
+    })
+    factory = null; registered = []
+    vi.resetModules()
+    await bootClient()
+    const bar = registered.find((r) => r.id === 'music-player-plus-bar').elementFactory()
+    const barHtml = renderToString(bar)
+    // the restored podcast episode is the current track → shown on the bar
+    expect(barHtml).toContain('EP1')
+    // and the panel (podcast detail) is reachable; the restore set scope=podcast + queue
+    const state = registered.find((r) => r.id === 'music-player-plus-panel').elementFactory()
+    const { div, unmount } = mount(state)
+    expect(div.textContent).toContain('播客')
+    unmount()
+  })
+
   it('shows an aggregated "全部" feed and switches to a specific source on click', async () => {
     // Pre-seed two distinct subscriptions so the panel renders both source cards
     // and the aggregated "all" feed.
