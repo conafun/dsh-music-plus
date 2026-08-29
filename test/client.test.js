@@ -21,6 +21,7 @@ let registered = []
 let manifest = null
 let prefsServer = {}
 let podcastsServer = []
+let podcastPlayServer = null
 
 function makePlaylist(id, name, fixed, paths) {
   return {
@@ -105,6 +106,13 @@ async function fetchStub(url, opts) {
     manifest.playlists = (manifest.playlists || []).concat([pl])
     return jsonRes({ ok: true, playlist: pl })
   }
+  if (u === '/dsh-music-plus/podcast-play') {
+    if (o && o.method === 'POST') {
+      podcastPlayServer = JSON.parse(o.body || '{}')
+      return jsonRes({ ok: true, play: podcastPlayServer })
+    }
+    return jsonRes({ ok: true, play: podcastPlayServer })
+  }
   return jsonRes({})
 }
 
@@ -171,6 +179,7 @@ beforeEach(async () => {
   prefsServer = {}
   lastFilesUrl = null
   podcastsServer = []
+  podcastPlayServer = null
   manifest = baseManifest()
   await bootClient()
 })
@@ -275,26 +284,21 @@ describe('dsh-music-plus podcast', () => {
     const ep1 = [...div.querySelectorAll('.dsh-music-track')].find((b) => b.textContent.includes('EP1'))
     act(() => { ep1.dispatchEvent(new MouseEvent('click', { bubbles: true })) })
     await act(async () => { await new Promise((r) => setTimeout(r, 0)) })
-    // wait for the debounced prefs flush (800ms) + the POST to settle
-    await act(async () => { await new Promise((r) => setTimeout(r, 900)) })
-    const raw = prefsServer['dsh-music-playback']
-    expect(raw, 'prefsServer keys=' + JSON.stringify(Object.keys(prefsServer)) + ' raw=' + (raw ? raw.slice(0, 120) : '')).toBeTruthy()
-    const saved = JSON.parse(raw)
-    expect(saved.kind).toBe('podcast')
-    expect(saved.podId).toBeTruthy()
-    expect(saved.epIdx).toBe(0)
-    expect(saved.queue).toBeTruthy()
+    await act(async () => { await new Promise((r) => setTimeout(r, 50)) })
+    expect(podcastPlayServer, 'podcastPlayServer=' + JSON.stringify(podcastPlayServer)).toBeTruthy()
+    expect(podcastPlayServer.podId).toBeTruthy()
+    expect(podcastPlayServer.epIdx).toBe(0)
+    expect(podcastPlayServer.queue).toBeTruthy()
     unmount()
   })
 
-  it('restores the last podcast from the Host prefs after a reload', async () => {
-    // Simulate a previous session that saved a podcast at EP1/12s. Re-boot fresh
-    // so loadTracks reads the populated prefs and restores the podcast.
-    prefsServer['dsh-music-playback'] = JSON.stringify({
-      kind: 'podcast', podId: 'pod-new', epIdx: 0, name: 'EP1', position: 12, duration: 120,
+  it('restores the last podcast from the dedicated channel after a reload', async () => {
+    // Simulate a previous session that saved a podcast at EP1/12s (dedicated endpoint).
+    podcastPlayServer = {
+      podId: 'pod-new', epIdx: 0, name: 'EP1', position: 12, duration: 120, ts: 999999999,
       queue: [{ title: 'EP1', url: 'http://cdn/e1.mp3' }, { title: 'EP2', url: 'http://cdn/e2.mp3' }],
       queueSource: { podId: 'pod-new', title: '测试播客' },
-    })
+    }
     factory = null; registered = []
     vi.resetModules()
     await bootClient()
