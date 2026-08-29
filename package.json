@@ -1,7 +1,7 @@
 {
-  "name": "dsh-music-player",
+  "name": "dsh-music-plus",
   "version": "0.6.7",
-  "description": "DeepSeek Harness 本地音乐 + AI 讲书插件：Host 扫描音乐目录并以 HTTP 流式提供音频、解析 .txt 小说结构并经 MiMo TTS 合成朗读，浏览器侧提供播放条/播放面板/章节目录跳转/多声音选择/实时频谱，并注册 music_play 模型工具",
+  "description": "DeepSeek Harness 本地音乐播放插件：Host 扫描音乐目录并以 HTTP 流式提供音频、自建歌单与播客 RSS 订阅（在线播放各集音频），浏览器侧提供播放条/播放面板/实时频谱，并注册 music_play_plus 模型工具",
   "type": "module",
   "main": "lib/index.js",
   "exports": {
@@ -22,22 +22,22 @@
     "music",
     "player",
     "audio",
-    "tts",
-    "novel",
-    "book"
+    "playlist",
+    "podcast",
+    "rss"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kendu76/dsh-music-player.git"
+    "url": "git+https://github.com/conafun/dsh-music-plus.git"
   },
   "license": "MIT",
   "engines": {
     "node": ">=20"
   },
   "scripts": {
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "ci": "vitest run"
+    "test": "vitest run --pool=threads",
+    "test:watch": "vitest --pool=threads",
+    "ci": "vitest run --pool=threads"
   },
   "dsh": {
     "bundle": {

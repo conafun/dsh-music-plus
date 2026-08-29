@@ -1,5 +1,5 @@
 /**
- * Unit/integration tests for the dsh-music-player host half (lib/index.js).
+ * Unit/integration tests for the dsh-music-plus host half (lib/index.js).
  *
  * Strategy: drive the plugin's real `apply()` with a fake `ctx` whose `webServer`
  * captures the registered HTTP handler, and whose `fs` is backed by on-disk files
@@ -11,7 +11,6 @@ import { mkdtempSync, writeFileSync, mkdirSync, readdirSync, statSync, readFileS
 import { deflateRawSync } from 'node:zlib'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
-import * as QRC from '../lib/qrc.js'
 
 import {
   apply, parseBookStructure, splitBookChunks, parseLrc, MAX_TTS_CHARS,
@@ -226,6 +225,13 @@ function boot({ files = {}, musicFiles = {} } = {}) {
   const prevDshHome = process.env.DSH_HOME
   process.env.HOME = home
   process.env.DSH_HOME = join(home, '.dsh')
+  // Seed the plugin's persisted music-root state to point at the temp Music
+  // dir. lib's getHome() prefers os.homedir() (the real user home), so without
+  // this the default root would be the host's real $HOME/Music — leaking real
+  // tracks into the scan and breaking the hermetic count/stream/quality/music_play_plus
+  // assertions. init() honours a stored root, so this keeps tests machine-agnostic.
+  mkdirSync(process.env.DSH_HOME, { recursive: true })
+  writeFileSync(join(process.env.DSH_HOME, 'dsh-music-plus-state.json'), JSON.stringify({ root: musicDir }) + '\n', 'utf8')
 
   const fs = makeFs(home)
   const registered = []
@@ -253,7 +259,7 @@ function boot({ files = {}, musicFiles = {} } = {}) {
 
   apply(loader.ctx)
 
-  const routes = registered.filter((r) => r.kind === 'prefix' && r.path === '/dsh-music')
+  const routes = registered.filter((r) => r.kind === 'prefix' && r.path === '/dsh-music-plus')
   const handler = routes.length > 0 ? routes[0].handler : null
 
   const cleanup = () => {
@@ -267,15 +273,15 @@ function boot({ files = {}, musicFiles = {} } = {}) {
 
 afterEach(() => { /* cleanup handled per-boot to avoid cross-test state */ })
 
-describe('dsh-music-player host routes', () => {
-  it('reports the scanned library via /dsh-music/manifest', async () => {
+describe('dsh-music-plus host routes', () => {
+  it('reports the scanned library via /dsh-music-plus/manifest', async () => {
     const { handler, musicDir, cleanup } = boot({
       musicFiles: { 'a.mp3': 'AUDIO-A', 'b.flac': 'AUDIO-B' },
     })
     try {
       expect(handler).toBeTruthy()
       const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/manifest' }), res)
+      await handler(makeReq({ url: '/dsh-music-plus/manifest' }), res)
       const data = JSON.parse(res.body)
       expect(res.status).toBe(200)
       expect(data.count).toBe(2)
@@ -285,42 +291,41 @@ describe('dsh-music-player host routes', () => {
     } finally { cleanup() }
   })
 
-  it('persists playback prefs to the Host via /dsh-music/prefs', async () => {
+  it('persists playback prefs to the Host via /dsh-music-plus/prefs', async () => {
     const { home, handler, cleanup } = boot()
     try {
       // fresh boot -> empty snapshot
       const res0 = makeRes()
-      await handler(makeReq({ url: '/dsh-music/prefs' }), res0)
+      await handler(makeReq({ url: '/dsh-music-plus/prefs' }), res0)
       expect(JSON.parse(res0.body)).toEqual({ ok: true, prefs: {} })
 
       // POST merges known string values
       const res1 = makeRes()
       await handler(
-        makeReq({ method: 'POST', url: '/dsh-music/prefs', body: JSON.stringify({ prefs: { 'dsh-music-volume': '0.65', 'dsh-music-mode': 'shuffle', 'dsh-music-voice': '碧瑶' } }) }),
+        makeReq({ method: 'POST', url: '/dsh-music-plus/prefs', body: JSON.stringify({ prefs: { 'dsh-music-volume': '0.65', 'dsh-music-mode': 'shuffle' } }) }),
         res1,
       )
       const d1 = JSON.parse(res1.body)
       expect(d1.ok).toBe(true)
       expect(d1.prefs['dsh-music-volume']).toBe('0.65')
       expect(d1.prefs['dsh-music-mode']).toBe('shuffle')
-      expect(d1.prefs['dsh-music-voice']).toBe('碧瑶')
 
       // the state is written to disk under DSH_HOME (survives restarts)
-      const prefsFile = join(home, '.dsh', 'music-player-prefs.json')
+      const prefsFile = join(home, '.dsh', 'dsh-music-plus-prefs.json')
       expect(existsSync(prefsFile)).toBe(true)
       const onDisk = JSON.parse(readFileSync(prefsFile, 'utf8'))
       expect(onDisk.prefs['dsh-music-mode']).toBe('shuffle')
 
       // GET reflects the persisted snapshot
       const res2 = makeRes()
-      await handler(makeReq({ url: '/dsh-music/prefs' }), res2)
+      await handler(makeReq({ url: '/dsh-music-plus/prefs' }), res2)
       const d2 = JSON.parse(res2.body)
       expect(d2.prefs['dsh-music-volume']).toBe('0.65')
 
       // remove clears a key without touching the others
       const res3 = makeRes()
       await handler(
-        makeReq({ method: 'POST', url: '/dsh-music/prefs', body: JSON.stringify({ remove: ['dsh-music-mode'] }) }),
+        makeReq({ method: 'POST', url: '/dsh-music-plus/prefs', body: JSON.stringify({ remove: ['dsh-music-mode'] }) }),
         res3,
       )
       const d3 = JSON.parse(res3.body)
@@ -335,7 +340,7 @@ describe('dsh-music-player host routes', () => {
       const big = 'x'.repeat(300 * 1024)
       const res = makeRes()
       await handler(
-        makeReq({ method: 'POST', url: '/dsh-music/prefs', body: JSON.stringify({ prefs: { 'evil-key': '1', 'dsh-music-volume': '1.5', 'dsh-music-mode': 'bogus', 'dsh-music-playback': big } }) }),
+        makeReq({ method: 'POST', url: '/dsh-music-plus/prefs', body: JSON.stringify({ prefs: { 'evil-key': '1', 'dsh-music-volume': '1.5', 'dsh-music-mode': 'bogus', 'dsh-music-playback': big } }) }),
         res,
       )
       const d = JSON.parse(res.body)
@@ -347,96 +352,8 @@ describe('dsh-music-player host routes', () => {
     } finally { cleanup() }
   })
 
-  it('accepts QQ-related prefs (qq-fav / qq-history / qq-ui) through the allowlist', async () => {
-    const { handler, cleanup } = boot()
-    try {
-      const res = makeRes()
-      await handler(
-        makeReq({ method: 'POST', url: '/dsh-music/prefs', body: JSON.stringify({ prefs: {
-          'dsh-music-qq-fav': JSON.stringify({ ids: [1, 2], mids: ['a', 'b'] }),
-          'dsh-music-qq-history': JSON.stringify(['周杰伦', '七里香']),
-          'dsh-music-qq-ui': JSON.stringify({ layer: 'playlist', plId: 'x', plName: '歌单' }),
-        } }) }),
-        res,
-      )
-      const d = JSON.parse(res.body)
-      expect(d.ok).toBe(true)
-      expect(JSON.parse(d.prefs['dsh-music-qq-fav']).mids).toEqual(['a', 'b'])
-      expect(JSON.parse(d.prefs['dsh-music-qq-history'])).toContain('周杰伦')
-      expect(JSON.parse(d.prefs['dsh-music-qq-ui']).layer).toBe('playlist')
-    } finally { cleanup() }
-  })
 
-  it('accepts KuGou-related prefs (kg-playback / kg-history) through the allowlist (persistence regression)', async () => {
-    // 回归：酷狗播放进度+队列曾漏出 Host 白名单，POST 被 sanitizePrefs 静默丢弃，
-    // 导致「播酷狗时刷新页面，播放条恢复成 QQ 音乐」（restoreLatest 找不到酷狗记录、
-    // kgTs=-1，回退到时间戳最新的 QQ 记录）。kg-playback / kg-history 必须能存、
-    // 能 GET 回读——否则刷新后酷狗播放数据不落盘。
-    const { handler, cleanup } = boot()
-    try {
-      const res = makeRes()
-      await handler(
-        makeReq({ method: 'POST', url: '/dsh-music/prefs', body: JSON.stringify({ prefs: {
-          'dsh-music-kg-playback': JSON.stringify({ id: 'kg:abc123', name: '晴天', artists: ['周杰伦'], position: 42, duration: 260, queue: [{ hash: 'abc123', title: '晴天', artists: ['周杰伦'] }], source: '在线', ts: 1234567890 }),
-          'dsh-music-kg-history': JSON.stringify(['周杰伦', '酷狗热搜']),
-        } }) }),
-        res,
-      )
-      let d = JSON.parse(res.body)
-      expect(d.ok).toBe(true)
-      const saved = JSON.parse(d.prefs['dsh-music-kg-playback'])
-      expect(saved.id).toBe('kg:abc123')
-      expect(saved.position).toBe(42)
-      expect(saved.queue[0].hash).toBe('abc123')
-      expect(JSON.parse(d.prefs['dsh-music-kg-history'])).toContain('周杰伦')
-      // GET 回读：快照里确实持久化了酷狗记录
-      const g = makeRes()
-      await handler(makeReq({ method: 'GET', url: '/dsh-music/prefs' }), g)
-      const gd = JSON.parse(g.body)
-      expect(JSON.parse(gd.prefs['dsh-music-kg-playback']).id).toBe('kg:abc123')
-      expect(JSON.parse(gd.prefs['dsh-music-kg-history'])).toContain('酷狗热搜')
-    } finally { cleanup() }
-  })
 
-  it('accepts the lyric fx pref through the allowlist, drops invalid fx and non-config keys (persistence regression)', async () => {
-    // 回归：新配置键若漏出 Host 白名单，POST 会被 sanitizePrefs 静默丢弃，
-    // 表现为「歌词动效设置刷新后重置」。fx 必须能存、能 GET 回读；
-    // 跑马灯/边缘渐隐是内置行为，不再有配置键（历史残留应被清理）。
-    const { handler, cleanup } = boot()
-    try {
-      const res = makeRes()
-      await handler(
-        makeReq({ method: 'POST', url: '/dsh-music/prefs', body: JSON.stringify({ prefs: {
-          'dsh-music-lyric-fx': 'karaoke',
-          'dsh-music-show-quality': '0',
-          'dsh-music-show-bar-bg': '0',
-          'dsh-music-qq-playback': JSON.stringify({ id: 'qq:1', queue: [] }),
-          'dsh-music-lyric-marquee': '0',
-          'dsh-music-lyric-mask': '1',
-        } }) }),
-        res,
-      )
-      let d = JSON.parse(res.body)
-      expect(d.ok).toBe(true)
-      expect(d.prefs['dsh-music-lyric-fx']).toBe('karaoke')
-      expect(d.prefs['dsh-music-show-quality']).toBe('0')
-      expect(d.prefs['dsh-music-show-bar-bg']).toBe('0')
-      expect(d.prefs['dsh-music-qq-playback']).toBe(JSON.stringify({ id: 'qq:1', queue: [] }))
-      expect('dsh-music-lyric-marquee' in d.prefs).toBe(false) // 已下线的配置键
-      expect('dsh-music-lyric-mask' in d.prefs).toBe(false)
-      // 非法 fx 枚举值丢弃
-      const res2 = makeRes()
-      await handler(
-        makeReq({ method: 'POST', url: '/dsh-music/prefs', body: JSON.stringify({ prefs: {
-          'dsh-music-lyric-fx': 'bogus',
-        } }) }),
-        res2,
-      )
-      d = JSON.parse(res2.body)
-      // bogus 被丢弃：快照里仍是第一次存的 karaoke，绝不是 bogus
-      expect(d.prefs['dsh-music-lyric-fx']).toBe('karaoke')
-    } finally { cleanup() }
-  })
 
   it('accepts the viz-mode pref through the allowlist, drops invalid values (persistence regression)', async () => {
     // 回归：新配置键若漏出 Host 白名单，POST 会被 sanitizePrefs 静默丢弃，
@@ -445,7 +362,7 @@ describe('dsh-music-player host routes', () => {
     try {
       const res = makeRes()
       await handler(
-        makeReq({ method: 'POST', url: '/dsh-music/prefs', body: JSON.stringify({ prefs: {
+        makeReq({ method: 'POST', url: '/dsh-music-plus/prefs', body: JSON.stringify({ prefs: {
           'dsh-music-viz-mode': 'wave',
         } }) }),
         res,
@@ -455,13 +372,13 @@ describe('dsh-music-player host routes', () => {
       expect(d.prefs['dsh-music-viz-mode']).toBe('wave')
       // GET 回读：快照里确实持久化了 wave
       const g = makeRes()
-      await handler(makeReq({ method: 'GET', url: '/dsh-music/prefs' }), g)
+      await handler(makeReq({ method: 'GET', url: '/dsh-music-plus/prefs' }), g)
       const gd = JSON.parse(g.body)
       expect(gd.prefs['dsh-music-viz-mode']).toBe('wave')
       // 非法枚举值丢弃
       const res2 = makeRes()
       await handler(
-        makeReq({ method: 'POST', url: '/dsh-music/prefs', body: JSON.stringify({ prefs: {
+        makeReq({ method: 'POST', url: '/dsh-music-plus/prefs', body: JSON.stringify({ prefs: {
           'dsh-music-viz-mode': 'bogus',
         } }) }),
         res2,
@@ -472,55 +389,8 @@ describe('dsh-music-player host routes', () => {
     } finally { cleanup() }
   })
 
-  it('lists .txt novels as books in the manifest', async () => {
-    // Books share the default root with music until a separate book root is set.
-    const { handler, musicDir, cleanup } = boot({
-      musicFiles: { 'a.mp3': 'AUDIO-A', 'novel.txt': '第一章 起源。' },
-    })
-    try {
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/manifest' }), res)
-      const data = JSON.parse(res.body)
-      expect(res.status).toBe(200)
-      expect(data.tracks.map((t) => t.name)).toEqual(['a.mp3'])
-      expect(data.books.map((b) => b.name)).toEqual(['novel.txt'])
-      expect(data.bookRoot).toBe(musicDir)
-      // book URLs route through the /book/ path
-      expect(data.books[0].url.startsWith('/dsh-music/book/')).toBe(true)
-    } finally { cleanup() }
-  })
 
-  it('recognizes a Windows-style GBK-encoded .txt as a book', async () => {
-    // Windows often saves .txt as GBK (multi-byte, not valid UTF-8). The scanner
-    // matches by extension, so a GBK byte buffer must still surface as a book.
-    // "第一章" in GBK/GB2312: 第=B5DA 一=D2BB 章=D5C2
-    const gbk = Buffer.from([0xB5, 0xDA, 0xD2, 0xBB, 0xD5, 0xC2])
-    const { handler, cleanup } = boot({
-      musicFiles: { 'gbk-novel.txt': gbk },
-    })
-    try {
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/manifest' }), res)
-      const data = JSON.parse(res.body)
-      expect(res.status).toBe(200)
-      expect(data.books.map((b) => b.name)).toEqual(['gbk-novel.txt'])
-      expect(data.tracks).toEqual([])
-    } finally { cleanup() }
-  })
 
-  it('synthesizing a book without a TTS key returns a clear error', async () => {
-    const { handler, cleanup } = boot({
-      musicFiles: { 'novel.txt': 'Hey 这是一段小说文本。' },
-    })
-    try {
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/book/b0' }), res)
-      // No key in the test env -> host returns 500 with a Chinese diagnostic,
-      // not a crash.
-      expect(res.status).toBe(500)
-      expect(String(res.body)).toContain('未配置') // "未配置"
-    } finally { cleanup() }
-  })
 
   it('excludes non-audio files from the manifest', async () => {
     const { handler, cleanup } = boot({
@@ -528,7 +398,7 @@ describe('dsh-music-player host routes', () => {
     })
     try {
       const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/manifest' }), res)
+      await handler(makeReq({ url: '/dsh-music-plus/manifest' }), res)
       expect(JSON.parse(res.body).count).toBe(1)
     } finally { cleanup() }
   })
@@ -537,7 +407,7 @@ describe('dsh-music-player host routes', () => {
     const { handler, cleanup } = boot({ musicFiles: { 'song.mp3': 'X'.repeat(100) } })
     try {
       const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/0' }), res)
+      await handler(makeReq({ url: '/dsh-music-plus/0' }), res)
       expect(res.status).toBe(200)
       expect(res.headers['Content-Type']).toBe('audio/mpeg')
       expect(res.headers['Content-Length']).toBe('100')
@@ -550,7 +420,7 @@ describe('dsh-music-player host routes', () => {
     try {
       const res = makeRes()
       await handler(
-        makeReq({ url: '/dsh-music/0', headers: { range: 'bytes=2-5' } }),
+        makeReq({ url: '/dsh-music-plus/0', headers: { range: 'bytes=2-5' } }),
         res,
       )
       expect(res.status).toBe(206)
@@ -565,7 +435,7 @@ describe('dsh-music-player host routes', () => {
     try {
       const res = makeRes()
       await handler(
-        makeReq({ url: '/dsh-music/0', headers: { range: 'bytes=-3' } }),
+        makeReq({ url: '/dsh-music-plus/0', headers: { range: 'bytes=-3' } }),
         res,
       )
       expect(res.status).toBe(206)
@@ -578,7 +448,7 @@ describe('dsh-music-player host routes', () => {
     try {
       const res = makeRes()
       await handler(
-        makeReq({ url: '/dsh-music/0', headers: { range: 'bytes=10-20' } }),
+        makeReq({ url: '/dsh-music-plus/0', headers: { range: 'bytes=10-20' } }),
         res,
       )
       expect(res.status).toBe(416)
@@ -590,7 +460,7 @@ describe('dsh-music-player host routes', () => {
     const { handler, cleanup } = boot({ musicFiles: { 'song.mp3': 'A' } })
     try {
       const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/999' }), res)
+      await handler(makeReq({ url: '/dsh-music-plus/999' }), res)
       expect(res.status).toBe(404)
     } finally { cleanup() }
   })
@@ -599,13 +469,13 @@ describe('dsh-music-player host routes', () => {
     const { handler, cleanup } = boot({ musicFiles: { 'song.mp3': 'HEADBODY' } })
     try {
       const res = makeRes()
-      await handler(makeReq({ method: 'HEAD', url: '/dsh-music/0' }), res)
+      await handler(makeReq({ method: 'HEAD', url: '/dsh-music-plus/0' }), res)
       expect(res.status).toBe(200)
       expect(res.headers['Content-Length']).toBe('8')
     } finally { cleanup() }
   })
 
-  it('switches the library root via /dsh-music/set-root', async () => {
+  it('switches the library root via /dsh-music-plus/set-root', async () => {
     const { handler, home, cleanup } = boot({ musicFiles: { 'a.mp3': 'AAA' } })
     try {
       // add a second music directory under the temp home
@@ -615,7 +485,7 @@ describe('dsh-music-player host routes', () => {
 
       const res = makeRes()
       await handler(
-        makeReq({ method: 'POST', url: '/dsh-music/set-root', body: JSON.stringify({ path: other }) }),
+        makeReq({ method: 'POST', url: '/dsh-music-plus/set-root', body: JSON.stringify({ path: other }) }),
         res,
       )
       const data = JSON.parse(res.body)
@@ -632,7 +502,7 @@ describe('dsh-music-player host routes', () => {
     try {
       const res = makeRes()
       await handler(
-        makeReq({ method: 'POST', url: '/dsh-music/set-root', body: JSON.stringify({ path: join(home, 'not-a-dir.txt') }) }),
+        makeReq({ method: 'POST', url: '/dsh-music-plus/set-root', body: JSON.stringify({ path: join(home, 'not-a-dir.txt') }) }),
         res,
       )
       expect(res.status).toBe(400)
@@ -640,23 +510,23 @@ describe('dsh-music-player host routes', () => {
     } finally { cleanup() }
   })
 
-  it('re-scans the current directory via /dsh-music/rescan (manual refresh)', async () => {
+  it('re-scans the current directory via /dsh-music-plus/rescan (manual refresh)', async () => {
     const { handler, musicDir, cleanup } = boot({ musicFiles: { 'a.mp3': 'AAA' } })
     try {
       // 初始扫描 1 首
       const res0 = makeRes()
-      await handler(makeReq({ url: '/dsh-music/manifest' }), res0)
+      await handler(makeReq({ url: '/dsh-music-plus/manifest' }), res0)
       expect(JSON.parse(res0.body).count).toBe(1)
 
       // 新增文件后，manifest 仍返回旧的内存扫描结果（不动态刷新）
       writeFileSync(join(musicDir, 'new.mp3'), 'NEWBYTES')
       const res1 = makeRes()
-      await handler(makeReq({ url: '/dsh-music/manifest' }), res1)
+      await handler(makeReq({ url: '/dsh-music-plus/manifest' }), res1)
       expect(JSON.parse(res1.body).count).toBe(1)
 
       // 手动 rescan 后能看到新文件
       const res2 = makeRes()
-      await handler(makeReq({ method: 'POST', url: '/dsh-music/rescan' }), res2)
+      await handler(makeReq({ method: 'POST', url: '/dsh-music-plus/rescan' }), res2)
       const data = JSON.parse(res2.body)
       expect(data.ok).toBe(true)
       expect(data.count).toBe(2)
@@ -665,7 +535,7 @@ describe('dsh-music-player host routes', () => {
   })
 })
 
-describe('dsh-music-player /dir route', () => {
+describe('dsh-music-plus /dir route', () => {
   it('lists subdirectories with parent/up info and files after them', async () => {
     const { handler, home, cleanup } = boot({
       files: {
@@ -677,7 +547,7 @@ describe('dsh-music-player /dir route', () => {
     })
     try {
       const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/dir?path=' + encodeURIComponent(join(home, 'Music')) }), res)
+      await handler(makeReq({ url: '/dsh-music-plus/dir?path=' + encodeURIComponent(join(home, 'Music')) }), res)
       const data = JSON.parse(res.body)
       expect(res.status).toBe(200)
       expect(data.name).toBe('Music')
@@ -691,15 +561,17 @@ describe('dsh-music-player /dir route', () => {
     } finally { cleanup() }
   })
 
-  it('reports up=null at the filesystem root', async () => {
+  it('reports no parent (up) at the filesystem root', async () => {
     const { handler, cleanup } = boot({ musicFiles: { 'a.mp3': 'A' } })
     try {
       const root = resolve('/')
       const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/dir?path=' + encodeURIComponent(root) }), res)
+      await handler(makeReq({ url: '/dsh-music-plus/dir?path=' + encodeURIComponent(root) }), res)
       const data = JSON.parse(res.body)
       expect(res.status).toBe(200)
-      expect(data.up).toBe(null)
+      // A filesystem root has no parent directory: on POSIX it is null; on
+      // Windows the drive root's parent is the __drives__ sentinel.
+      expect([null, '__drives__']).toContain(data.up)
     } finally { cleanup() }
   })
 
@@ -707,7 +579,7 @@ describe('dsh-music-player /dir route', () => {
     const { handler, home, cleanup } = boot({ files: { 'Music/sub-a/song.mp3': 'A' } })
     try {
       const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/dir?path=' + encodeURIComponent(join(home, 'Music')) }), res)
+      await handler(makeReq({ url: '/dsh-music-plus/dir?path=' + encodeURIComponent(join(home, 'Music')) }), res)
       const data = JSON.parse(res.body)
       expect(res.status).toBe(200)
       expect(Array.isArray(data.crumbs)).toBe(true)
@@ -731,7 +603,7 @@ describe('dsh-music-player /dir route', () => {
     const { handler, cleanup } = boot({ musicFiles: { 'a.mp3': 'A' } })
     try {
       const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/dir?path=__drives__' }), res)
+      await handler(makeReq({ url: '/dsh-music-plus/dir?path=__drives__' }), res)
       const data = JSON.parse(res.body)
       // On non-Windows the sentinel resolves to the POSIX root ("/").
       expect(Array.isArray(data.crumbs)).toBe(true)
@@ -746,7 +618,7 @@ describe('dsh-music-player /dir route', () => {
     const { handler, cleanup } = boot({ musicFiles: { 'a.mp3': 'A' } })
     try {
       const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/dir?path=__drives__' }), res)
+      await handler(makeReq({ url: '/dsh-music-plus/dir?path=__drives__' }), res)
       const data = JSON.parse(res.body)
       // On non-Windows the sentinel resolves to the POSIX root with no dirs.
       expect([null, '/']).toContain(data.up)
@@ -754,11 +626,11 @@ describe('dsh-music-player /dir route', () => {
   })
 })
 
-describe('dsh-music-player music_play tool', () => {
-  it('registers a music_play tool with the expected name', async () => {
+describe('dsh-music-plus music_play_plus tool', () => {
+  it('registers a music_play_plus tool with the expected name', async () => {
     const { tools, cleanup } = boot({ musicFiles: { 'a.mp3': 'A' } })
     try {
-      const tool = tools.find((t) => t.name === 'music_play')
+      const tool = tools.find((t) => t.name === 'music_play_plus')
       expect(tool).toBeTruthy()
       expect(typeof tool.description).toBe('string')
       expect(tool.description.length).toBeGreaterThan(0)
@@ -770,7 +642,7 @@ describe('dsh-music-player music_play tool', () => {
   it('returns a notice when the library is empty', async () => {
     const { tools, cleanup } = boot({ musicFiles: {} })
     try {
-      const tool = tools.find((t) => t.name === 'music_play')
+      const tool = tools.find((t) => t.name === 'music_play_plus')
       const out = await tool.execute({})
       expect(out.played).toBe(false)
       expect(typeof out.notice).toBe('string')
@@ -781,7 +653,7 @@ describe('dsh-music-player music_play tool', () => {
   it('sets a play intent with the picked track id on a query play', async () => {
     const { tools, handler, cleanup } = boot({ musicFiles: { 'song.mp3': 'A', 'other.mp3': 'B' } })
     try {
-      const tool = tools.find((t) => t.name === 'music_play')
+      const tool = tools.find((t) => t.name === 'music_play_plus')
       const out = await tool.execute({ query: 'song' })
       expect(out.played).toBe(true)
       expect(out.action).toBe('play')
@@ -790,7 +662,7 @@ describe('dsh-music-player music_play tool', () => {
       expect(out.count).toBe(2)
       // the intent it queued for the browser carries the play action + id/name
       const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/intent' }), res)
+      await handler(makeReq({ url: '/dsh-music-plus/intent' }), res)
       const intent = JSON.parse(res.body)
       expect(intent.action).toBe('play')
       expect(typeof intent.id).toBe('string')
@@ -801,13 +673,13 @@ describe('dsh-music-player music_play tool', () => {
   it('prefers an exact filename match over a substring match', async () => {
     const { tools, handler, cleanup } = boot({ musicFiles: { 'a.mp3': 'A', 'ab.mp3': 'B' } })
     try {
-      const tool = tools.find((t) => t.name === 'music_play')
+      const tool = tools.find((t) => t.name === 'music_play_plus')
       const out = await tool.execute({ query: 'a' })   // matches both a.mp3 and ab.mp3
       expect(out.played).toBe(true)
       expect(out.matches).toBe(2)
       expect(out.track).toBe('a.mp3')                   // exact filename match wins
       const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/intent' }), res)
+      await handler(makeReq({ url: '/dsh-music-plus/intent' }), res)
       expect(JSON.parse(res.body).name).toBe('a.mp3')
     } finally { cleanup() }
   })
@@ -815,13 +687,13 @@ describe('dsh-music-player music_play tool', () => {
   it('queues a pause intent for the browser player', async () => {
     const { tools, handler, cleanup } = boot({ musicFiles: { 'a.mp3': 'A' } })
     try {
-      const tool = tools.find((t) => t.name === 'music_play')
+      const tool = tools.find((t) => t.name === 'music_play_plus')
       const out = await tool.execute({ action: 'pause' })
       expect(out.action).toBe('pause')
       expect(out.played).toBe(false)
       expect(out.count).toBe(1)
       const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/intent' }), res)
+      await handler(makeReq({ url: '/dsh-music-plus/intent' }), res)
       // transport actions carry no id
       expect(JSON.parse(res.body)).toEqual({ action: 'pause' })
     } finally { cleanup() }
@@ -830,65 +702,22 @@ describe('dsh-music-player music_play tool', () => {
   it('queues next/prev/stop/resume intents', async () => {
     const { tools, handler, cleanup } = boot({ musicFiles: { 'a.mp3': 'A' } })
     try {
-      const tool = tools.find((t) => t.name === 'music_play')
+      const tool = tools.find((t) => t.name === 'music_play_plus')
       for (const action of ['next', 'prev', 'stop', 'resume']) {
         const out = await tool.execute({ action })
         expect(out.action).toBe(action)
         const res = makeRes()
-        await handler(makeReq({ url: '/dsh-music/intent' }), res)
+        await handler(makeReq({ url: '/dsh-music-plus/intent' }), res)
         expect(JSON.parse(res.body)).toEqual({ action })
       }
     } finally { cleanup() }
   })
 
-  it('plays a novel via music_play when the query matches only a book', async () => {
-    const { tools, handler, cleanup } = boot({
-      musicFiles: { 'song.mp3': 'A', '真相 作者：石楠.txt': '第一章\n这是正文。' },
-    })
-    try {
-      const tool = tools.find((t) => t.name === 'music_play')
-      const out = await tool.execute({ query: '真相' })
-      expect(out.played).toBe(true)
-      expect(out.kind).toBe('book')
-      expect(out.track).toContain('真相')
-      // the queued intent targets the novel for AI 讲书
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/intent' }), res)
-      const intent = JSON.parse(res.body)
-      expect(intent.action).toBe('play')
-      expect(intent.kind).toBe('book')
-      expect(intent.name).toContain('真相')
-    } finally { cleanup() }
-  })
 
-  it('plays the first novel when the library has music but the query hits no track', async () => {
-    const { tools, handler, cleanup } = boot({
-      musicFiles: { 'song.mp3': 'A', '中国制造 作者：周梅森.txt': '第一章\n这是正文。' },
-    })
-    try {
-      const tool = tools.find((t) => t.name === 'music_play')
-      const out = await tool.execute({ query: '中国制造' })
-      expect(out.played).toBe(true)
-      expect(out.kind).toBe('book')
-      expect(out.track).toContain('中国制造')
-    } finally { cleanup() }
-  })
 
-  it('plays the first novel when the library has no music at all', async () => {
-    const { tools, handler, cleanup } = boot({ musicFiles: { 'novel.txt': '第一章\n这是正文。' } })
-    try {
-      const tool = tools.find((t) => t.name === 'music_play')
-      const out = await tool.execute({})
-      expect(out.played).toBe(true)
-      expect(out.kind).toBe('book')
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/intent' }), res)
-      expect(JSON.parse(res.body).kind).toBe('book')
-    } finally { cleanup() }
-  })
 })
 
-describe('dsh-music-player parseBookStructure', () => {
+describe('dsh-music-plus parseBookStructure', () => {
   it('splits a novel into 简介 / chapters / 尾声 and derives title+author', () => {
     const text = [
       '中国制造 作者：周梅森',
@@ -1052,7 +881,7 @@ describe('dsh-music-player parseBookStructure', () => {
   })
 })
 
-describe('dsh-music-player splitBookChunks (heading gets its own chunk)', () => {
+describe('dsh-music-plus splitBookChunks (heading gets its own chunk)', () => {
   const norm = (t) => t.replace(/\r\n?/g, '\n').replace(/\uFEFF/g, '')
   const breaksOf = (st) => st.sections
     .filter((s) => Number.isFinite(s.textStart) && s.textStart >= 0)
@@ -1180,7 +1009,7 @@ describe('dsh-music-player splitBookChunks (heading gets its own chunk)', () => 
   })
 })
 
-describe('dsh-music-player parseLrc', () => {
+describe('dsh-music-plus parseLrc', () => {
   it('parses [mm:ss] timestamps with text into sorted lines', () => {
     const lrc = parseLrc('[00:12.00]第一句\n[00:30.5]第二句\n[01:02]第三句\n')
     expect(lrc).toEqual([
@@ -1212,363 +1041,11 @@ describe('dsh-music-player parseLrc', () => {
   })
 })
 
-describe('dsh-music-player /lyric route', () => {
-  it('serves parsed LRC for a track with a sibling .lrc (case-insensitive fallback)', async () => {
-    const { handler, musicDir, cleanup } = boot({
-      musicFiles: { 'song.mp3': 'M', 'Song.LRC': '[00:01.00]第一句\n[00:05.50]第二句\n' },
-    })
-    try {
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/lyric?path=' + encodeURIComponent(join(musicDir, 'song.mp3')) }), res)
-      expect(res.status).toBe(200)
-      const body = JSON.parse(res.body)
-      expect(body.ok).toBe(true)
-      expect(body.hasLrc).toBe(true)
-      expect(body.lrc).toEqual([
-        { t: 1, text: '第一句' },
-        { t: 5.5, text: '第二句' },
-      ])
-    } finally { cleanup() }
-  })
-  it('reports hasLrc:false when no sibling .lrc exists', async () => {
-    const { handler, musicDir, cleanup } = boot({ musicFiles: { 'song.mp3': 'M' } })
-    try {
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/lyric?path=' + encodeURIComponent(join(musicDir, 'song.mp3')) }), res)
-      expect(res.status).toBe(200)
-      const body = JSON.parse(res.body)
-      expect(body.ok).toBe(false)
-      expect(body.hasLrc).toBe(false)
-    } finally { cleanup() }
-  })
-  it('forbids unregistered paths (403) and rejects a missing path (400)', async () => {
-    const { handler, cleanup } = boot({ musicFiles: { 'song.mp3': 'M' } })
-    try {
-      const res1 = makeRes()
-      await handler(makeReq({ url: '/dsh-music/lyric?path=' + encodeURIComponent('/etc/passwd.mp3') }), res1)
-      expect(res1.status).toBe(403)
-      const res2 = makeRes()
-      await handler(makeReq({ url: '/dsh-music/lyric' }), res2)
-      expect(res2.status).toBe(400)
-    } finally { cleanup() }
-  })
-})
 
-describe('dsh-music-player /lyric/online route (本地无歌词 → 在线兜底)', () => {
-  // 按 URL 分发的 fetch stub：QQ 搜索 / QQ 歌词 / LRCLIB 搜索，并记录调用次数。
-  function makeStub({ qqSearch = [], qqLyric = null, lrclib = [], qqSongInfo = null, qqQrc = null }) {
-    const calls = { qqSearch: 0, qqLyric: 0, lrclib: 0, qqSongInfo: 0, qqQrc: 0 }
-    const fn = async (url, opts = {}) => {
-      const u = String(url)
-      if (u.includes('c.y.qq.com/soso/fcgi-bin/client_search_cp')) {
-        calls.qqSearch++
-        return { ok: true, status: 200, json: async () => ({ code: 0, data: { song: { totalnum: qqSearch.length, list: qqSearch } } }) }
-      }
-      if (u.includes('c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new')) {
-        calls.qqLyric++
-        return { ok: true, status: 200, json: async () => (qqLyric || { retcode: -1, lyric: '' }) }
-      }
-      if (u.includes('lrclib.net/api/search')) {
-        calls.lrclib++
-        return { ok: true, status: 200, json: async () => lrclib }
-      }
-      if (u.includes('fcg_play_single_song.fcg')) {
-        calls.qqSongInfo++
-        return { ok: true, status: 200, json: async () => (qqSongInfo === null ? { code: 0, data: [] } : { code: 0, data: [qqSongInfo] }) }
-      }
-      if (u.includes('musicu.fcg')) {
-        // 只服务 GetPlayLyricInfo；其它模块调用视为意外（防止误接上游）。
-        let module_ = ''
-        try { module_ = JSON.parse(opts.body).req.module } catch {}
-        if (module_ !== 'music.musichallSong.PlayLyricInfo') throw new Error('unexpected musicu module: ' + module_)
-        calls.qqQrc++
-        return { ok: true, status: 200, json: async () => (qqQrc || { code: 0, req: { code: 0, data: {} } }) }
-      }
-      throw new Error('unexpected stub url: ' + u)
-    }
-    fn.calls = calls
-    return fn
-  }
-  const qqSong = (songmid, title, artist, interval) => ({ songmid, songname: title, singer: [{ name: artist }], interval, payplay: 0 })
-  const lrclibRec = (id, trackName, artistName, duration, syncedLyrics) => ({ id, trackName, artistName, duration, instrumental: false, syncedLyrics })
-  // QRC 单曲信息桩（fcg_play_single_song.fcg 响应形态）
-  const songInfo = (id, name, artist, interval) => ({ id, mid: 'S1', name, interval, singer: [{ name: artist }], album: { name: '专辑' } })
 
-  it('qq/lyric prefers word-level QRC (songmid→数字ID→GetPlayLyricInfo) and returns wordLines', async () => {
-    const { handler, cleanup } = boot()
-    const qrcText = '<QrcInfos>\n[500,2000]你(500,700)好(1200,600)世(1800,400)\n</QrcInfos>'
-    const stub = makeStub({
-      qqSongInfo: songInfo(97773, '晴天', '周杰伦', 269),
-      qqQrc: { code: 0, req: { code: 0, data: { lyric: QRC.encryptHex(qrcText), qrc_t: 1761231326, lrc_t: 0, trans: '', trans_t: 0 } } },
-      qqLyric: { retcode: 0, lyric: '[00:01.00]不该走LRC\n' }, // 不应被用到
-    })
-    vi.stubGlobal('fetch', stub)
-    try {
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/qq/lyric?songmid=S1' }), res)
-      expect(res.status).toBe(200)
-      const body = JSON.parse(res.body)
-      expect(body.ok).toBe(true)
-      expect(body.source).toBe('qq-qrc')
-      // 词尾收紧以原行尾为上界：这里词尾(+尾巴)=2600ms ≥ 原行尾 2500ms → 窗口不变；
-      // 若词尾早于行尾（真实长间奏数据）则被收紧到词尾+400ms。
-      expect(body.wordLines).toEqual([{ t: 0.5, end: 2.5, text: '你好世' }])
-      expect(stub.calls.qqSongInfo).toBe(1)
-      expect(stub.calls.qqQrc).toBe(1)
-      expect(stub.calls.qqLyric).toBe(0)
 
-      // 第二次请求同一首歌：mid→ID 已缓存（不再打单曲详情），但歌词仍实时解密
-      const res2 = makeRes()
-      await handler(makeReq({ url: '/dsh-music/qq/lyric?songmid=S1' }), res2)
-      expect(JSON.parse(res2.body).source).toBe('qq-qrc')
-      expect(stub.calls.qqSongInfo).toBe(1)
-      expect(stub.calls.qqQrc).toBe(2)
-    } finally { cleanup(); vi.unstubAllGlobals() }
-  })
 
-  it('qq/lyric falls back to plain LRC when the song has no word data (qrc_t=0)', async () => {
-    const { handler, cleanup } = boot()
-    const stub = makeStub({
-      qqSongInfo: songInfo(449205, '稻香', '周杰伦', 223),
-      qqQrc: { code: 0, req: { code: 0, data: { lyric: 'aabbccdd00112233'.repeat(50), qrc_t: 0, lrc_t: 1728477663 } } }, // 加密数据但无逐字
-      qqLyric: { retcode: 0, lyric: '[00:01.00]对这个世界如果你有太多的抱怨\n', trans: '' },
-    })
-    vi.stubGlobal('fetch', stub)
-    try {
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/qq/lyric?songmid=S1' }), res)
-      const body = JSON.parse(res.body)
-      expect(body.ok).toBe(true)
-      expect(body.source).toBeUndefined()         // 走了旧形态（无 source 字段）
-      expect(body.lrc[0].text).toContain('太多的抱怨')
-      expect(stub.calls.qqLyric).toBe(1)
-    } finally { cleanup(); vi.unstubAllGlobals() }
-  })
-
-  it('qq/lyric falls back to plain LRC when songmid cannot resolve to a numeric id', async () => {
-    const { handler, cleanup } = boot()
-    const stub = makeStub({
-      qqSongInfo: null,                           // fcg 端点返回空 data → 解析失败
-      qqLyric: { retcode: 0, lyric: '[00:01.00]跌落谷底也不失意\n', trans: '' },
-    })
-    vi.stubGlobal('fetch', stub)
-    try {
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/qq/lyric?songmid=UNKNOWN' }), res)
-      const body = JSON.parse(res.body)
-      expect(body.ok).toBe(true)
-      expect(body.lrc[0].text).toContain('不失意')
-      expect(stub.calls.qqSongInfo).toBe(1)
-      expect(stub.calls.qqQrc).toBe(0)            // 无数字 ID → 不该发起 QRC 请求
-      // 失败结果已缓存：再来一次不重试 fcg
-      const res2 = makeRes()
-      await handler(makeReq({ url: '/dsh-music/qq/lyric?songmid=UNKNOWN' }), res2)
-      expect(JSON.parse(res2.body).ok).toBe(true)
-      expect(stub.calls.qqSongInfo).toBe(1)
-    } finally { cleanup(); vi.unstubAllGlobals() }
-  })
-
-  it('returns 400 for a missing path and 403 for an unregistered path', async () => {
-    const { handler, musicDir, cleanup } = boot({ musicFiles: { 'song.mp3': 'M' } })
-    try {
-      const res1 = makeRes()
-      await handler(makeReq({ url: '/dsh-music/lyric/online' }), res1)
-      expect(res1.status).toBe(400)
-      const res2 = makeRes()
-      await handler(makeReq({ url: '/dsh-music/lyric/online?path=' + encodeURIComponent('/etc/passwd.mp3') }), res2)
-      expect(res2.status).toBe(403)
-      // 未登记路径不得触发任何在线请求
-      expect(res2.status).toBe(403)
-    } finally { cleanup() }
-  })
-
-  it('serves a local sibling .lrc with source local when present (no online fetch)', async () => {
-    const { handler, musicDir, cleanup } = boot({
-      musicFiles: { 'song.mp3': 'M', 'song.lrc': '[00:01.00]第一句\n[00:05.50]第二句\n' },
-    })
-    let fetches = 0
-    vi.stubGlobal('fetch', async () => { fetches++; throw new Error('should not fetch') })
-    try {
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/lyric/online?path=' + encodeURIComponent(join(musicDir, 'song.mp3')) }), res)
-      expect(res.status).toBe(200)
-      const body = JSON.parse(res.body)
-      expect(body.ok).toBe(true)
-      expect(body.hasLyric).toBe(true)
-      expect(body.source).toBe('local')
-      expect(body.lrc).toEqual([
-        { t: 1, text: '第一句' },
-        { t: 5.5, text: '第二句' },
-      ])
-      expect(fetches).toBe(0)
-    } finally { cleanup(); vi.unstubAllGlobals() }
-  })
-
-  it('falls back to QQ online lyric (source qq) when no local .lrc exists', async () => {
-    const { handler, musicDir, cleanup } = boot({ musicFiles: { 'song.mp3': 'M' } })
-    const stub = makeStub({
-      qqSearch: [qqSong('S1', '七里香', '周杰伦', 297)],
-      qqLyric: { retcode: 0, lyric: '[00:01.00]窗外的麻雀\n[00:05.00]雨下整夜\n', trans: '[00:01.00]Sparrow\n' },
-    })
-    vi.stubGlobal('fetch', stub)
-    try {
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/lyric/online?path=' + encodeURIComponent(join(musicDir, 'song.mp3')) + '&title=%E4%B8%83%E9%87%8C%E9%A6%99&artist=%E5%91%A8%E6%9D%B0%E4%BC%A6&duration=297' }), res)
-      expect(res.status).toBe(200)
-      const body = JSON.parse(res.body)
-      expect(body.ok).toBe(true)
-      expect(body.hasLyric).toBe(true)
-      expect(body.source).toBe('qq')
-      expect(body.matched.songmid).toBe('S1')
-      expect(body.lrc[0]).toEqual({ t: 1, text: '窗外的麻雀' })
-      expect(body.trans).toEqual([{ t: 1, text: 'Sparrow' }])
-      expect(stub.calls.qqSearch).toBe(1)
-      expect(stub.calls.qqLyric).toBe(1)
-    } finally { cleanup(); vi.unstubAllGlobals() }
-  })
-
-  it('falls through to LRCLIB (source lrclib) when QQ has no matching song', async () => {
-    const { handler, musicDir, cleanup } = boot({ musicFiles: { 'song.mp3': 'M' } })
-    const stub = makeStub({
-      qqSearch: [qqSong('S9', '稻香', '周杰伦', 240)], // 标题不匹配 → QQ 分数不足
-      lrclib: [lrclibRec(7, '七里香', '周杰伦', 297, '[00:01.00]窗外的麻雀\n[00:05.00]雨下整夜\n')],
-    })
-    vi.stubGlobal('fetch', stub)
-    try {
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/lyric/online?path=' + encodeURIComponent(join(musicDir, 'song.mp3')) + '&title=%E4%B8%83%E9%87%8C%E9%A6%99&artist=%E5%91%A8%E6%9D%B0%E4%BC%A6' }), res)
-      const body = JSON.parse(res.body)
-      expect(body.ok).toBe(true)
-      expect(body.hasLyric).toBe(true)
-      expect(body.source).toBe('lrclib')
-      expect(body.matched.id).toBe(7)
-      expect(body.lrc.length).toBe(2)
-      expect(stub.calls.qqSearch).toBe(1) // QQ 搜到但分数不足 → 继续走 LRCLIB
-      expect(stub.calls.lrclib).toBe(1)
-    } finally { cleanup(); vi.unstubAllGlobals() }
-  })
-
-  it('caches a positive hit by path so a repeat request performs no new fetch', async () => {
-    const { handler, musicDir, cleanup } = boot({ musicFiles: { 'song.mp3': 'M' } })
-    const stub = makeStub({
-      qqSearch: [qqSong('S1', '晴天', '周杰伦', 269)],
-      qqLyric: { retcode: 0, lyric: '[00:01.00]故事的小黄花\n', trans: '' },
-    })
-    vi.stubGlobal('fetch', stub)
-    try {
-      const url = '/dsh-music/lyric/online?path=' + encodeURIComponent(join(musicDir, 'song.mp3')) + '&title=%E6%99%B4%E5%A4%A9&artist=%E5%91%A8%E6%9D%B0%E4%BC%A6'
-      const res1 = makeRes()
-      await handler(makeReq({ url }), res1)
-      expect(JSON.parse(res1.body).source).toBe('qq')
-      const res2 = makeRes()
-      await handler(makeReq({ url }), res2)
-      const body2 = JSON.parse(res2.body)
-      expect(body2.source).toBe('qq')
-      expect(body2.lrc).toEqual([{ t: 1, text: '故事的小黄花' }])
-      expect(stub.calls.qqSearch).toBe(1) // 第二次命中缓存，不再出网
-      expect(stub.calls.qqLyric).toBe(1)
-    } finally { cleanup(); vi.unstubAllGlobals() }
-  })
-
-  it('caches a negative result (no lyric) and returns hasLyric:false on repeat', async () => {
-    const { handler, musicDir, cleanup } = boot({ musicFiles: { 'song.mp3': 'M' } })
-    const stub = makeStub({ qqSearch: [], lrclib: [] })
-    vi.stubGlobal('fetch', stub)
-    try {
-      const url = '/dsh-music/lyric/online?path=' + encodeURIComponent(join(musicDir, 'song.mp3')) + '&title=no-such-song'
-      const res1 = makeRes()
-      await handler(makeReq({ url }), res1)
-      const body1 = JSON.parse(res1.body)
-      expect(body1.ok).toBe(true)
-      expect(body1.hasLyric).toBe(false)
-      const res2 = makeRes()
-      await handler(makeReq({ url }), res2)
-      expect(JSON.parse(res2.body).hasLyric).toBe(false)
-      expect(stub.calls.qqSearch).toBe(1) // 空结果也缓存，避免反复打接口
-      expect(stub.calls.lrclib).toBe(1)
-    } finally { cleanup(); vi.unstubAllGlobals() }
-  })
-})
-
-describe('dsh-music-player book text route', () => {
-  it('returns the plain text of a chunk from /book/<id>/text?from=n', async () => {
-    const text = '第一章 开始。\n这是正文第一块，内容足够长以便分块。'
-    const { handler, cleanup } = boot({ musicFiles: { 'novel.txt': text } })
-    try {
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/book/b0/text?from=0' }), res)
-      expect(res.status).toBe(200)
-      const body = JSON.parse(res.body)
-      expect(body.ok).toBe(true)
-      expect(typeof body.text).toBe('string')
-      expect(body.text.length).toBeGreaterThan(0)
-      expect(body.from).toBe(0)
-      // chunk text must come from the file content
-      expect(text.includes(body.text) || body.text.includes('第一章')).toBe(true)
-    } finally { cleanup() }
-  })
-  it('reports ok:false beyond the last chunk', async () => {
-    const { handler, cleanup } = boot({ musicFiles: { 'novel.txt': '只有一段。' } })
-    try {
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/book/b0/text?from=999' }), res)
-      expect(res.status).toBe(200)
-      const body = JSON.parse(res.body)
-      expect(body.ok).toBe(false)
-    } finally { cleanup() }
-  })
-})
-
-describe('dsh-music-player book structure meta route', () => {
-  it('returns title/author/sections with monotonic fromChunk from /book/<id>/meta', async () => {
-    const text = [
-      '真相 作者：石楠',
-      '',
-      '第一章',
-      '这是第一章正文，句子长度足以形成多个分块。',
-      '',
-      '第二章',
-      '这是第二章正文。',
-      '',
-      '尾声',
-      '结束了。',
-    ].join('\n')
-    const { handler, cleanup } = boot({ musicFiles: { 'novel.txt': text } })
-    try {
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/book/b0/meta' }), res)
-      expect(res.status).toBe(200)
-      const data = JSON.parse(res.body)
-      expect(data.title).toBe('真相')
-      expect(data.author).toBe('石楠')
-      expect(Array.isArray(data.sections)).toBe(true)
-      expect(data.sections.length).toBeGreaterThan(0)
-      // fromChunk is a valid chunk index and non-decreasing across sections
-      let prev = -1
-      for (const sec of data.sections) {
-        expect(sec.fromChunk).toBeGreaterThanOrEqual(0)
-        expect(sec.fromChunk).toBeLessThan(data.total)
-        expect(sec.fromChunk).toBeGreaterThanOrEqual(prev)
-        expect(typeof sec.heading).toBe('string')
-        expect(sec.heading.length).toBeGreaterThan(0)
-        prev = sec.fromChunk
-      }
-      // 讲书进度条依赖的「逐块累积字符偏移」：长度 = chunk 数 + 1，首项为 0、单调
-      // 不减，末项(全书总字符)与 totalChars 一致，且恒为正。
-      expect(Array.isArray(data.charOffsets)).toBe(true)
-      expect(data.charOffsets).toHaveLength(data.total + 1)
-      expect(data.charOffsets[0]).toBe(0)
-      for (let i = 1; i < data.charOffsets.length; i++) {
-        expect(data.charOffsets[i]).toBeGreaterThanOrEqual(data.charOffsets[i - 1])
-        expect(data.charOffsets[i] - data.charOffsets[i - 1]).toBeGreaterThan(0) // 每块非空
-      }
-      expect(data.totalChars).toBe(data.charOffsets[data.charOffsets.length - 1])
-      expect(data.totalChars).toBeGreaterThan(0)
-    } finally { cleanup() }
-  })
-})
-
-describe('dsh-music-player EPUB reader', () => {
+describe('dsh-music-plus EPUB reader', () => {
   it('flattens a stored-zip epub to plain text in spine order with OPF metadata', () => {
     const epub = buildEpub({
       chapters: [
@@ -1682,7 +1159,7 @@ describe('dsh-music-player EPUB reader', () => {
   })
 })
 
-describe('dsh-music-player QQ quality label (qqQualityLabel)', () => {
+describe('dsh-music-plus QQ quality label (qqQualityLabel)', () => {
   it('maps取链 filename 前缀/扩展名到通俗音质标签', () => {
     // 四档 FLAC（AI00/Q001/Q000/F000）→ 无损
     expect(qqQualityLabel('AI00abcdefabcdef.flac')).toBe('无损')
@@ -1704,7 +1181,7 @@ describe('dsh-music-player QQ quality label (qqQualityLabel)', () => {
   })
 })
 
-describe('dsh-music-player local audio quality (parseAudioMeta)', () => {
+describe('dsh-music-plus local audio quality (parseAudioMeta)', () => {
   // ---- 各格式文件头构造器（覆盖解析器读取的偏移）----
   function flacBytes({ rate = 44100, ch = 2, bits = 16, total = 44100 * 60 } = {}) {
     const b = Buffer.alloc(42)
@@ -1851,7 +1328,7 @@ describe('dsh-music-player local audio quality (parseAudioMeta)', () => {
     })
     try {
       const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/manifest' }), res)
+      await handler(makeReq({ url: '/dsh-music-plus/manifest' }), res)
       const data = JSON.parse(res.body)
       expect(res.status).toBe(200)
       const byName = Object.fromEntries(data.tracks.map((t) => [t.name, t.quality]))
@@ -1862,257 +1339,9 @@ describe('dsh-music-player local audio quality (parseAudioMeta)', () => {
   })
 })
 
-describe('dsh-music-player EPUB as a book', () => {
-  it('lists .epub novels as books in the manifest', async () => {
-    const { handler, cleanup } = boot({
-      musicFiles: { 'test-novel.epub': buildEpub({ chapters: [epubChapter('第一章 开始', '正文。')] }) },
-    })
-    try {
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/manifest' }), res)
-      const data = JSON.parse(res.body)
-      expect(res.status).toBe(200)
-      expect(data.books.map((b) => b.name)).toEqual(['test-novel.epub'])
-      expect(data.tracks).toEqual([])
-    } finally { cleanup() }
-  })
 
-  it('serves OPF title/author + chapter sections from /book/<id>/meta', async () => {
-    const { handler, cleanup } = boot({
-      musicFiles: {
-        'test-novel.epub': buildEpub({
-          chapters: [
-            epubChapter('第一章 开始', '这是第一章的正文，句子长度足以形成多个分块。'),
-            epubChapter('第二章 发展', '这是第二章的正文。'),
-            epubChapter('尾声', '结束了。'),
-          ],
-        }),
-      },
-    })
-    try {
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/book/b0/meta' }), res)
-      expect(res.status).toBe(200)
-      const data = JSON.parse(res.body)
-      // OPF metadata wins over the heuristic filename guess ("test-novel")
-      expect(data.title).toBe('测试之书')
-      expect(data.author).toBe('测试作者')
-      expect(Array.isArray(data.sections)).toBe(true)
-      expect(data.sections.length).toBeGreaterThanOrEqual(2)
-      expect(data.sections[0].heading).toContain('第一章')
-      // every section maps to a valid chunk index
-      for (const sec of data.sections) {
-        expect(sec.fromChunk).toBeGreaterThanOrEqual(0)
-        expect(sec.fromChunk).toBeLessThan(data.total)
-      }
-    } finally { cleanup() }
-  })
 
-  it('serves readable chunk text from /book/<id>/text?from=n for an epub', async () => {
-    const { handler, cleanup } = boot({
-      musicFiles: { 'test-novel.epub': buildEpub({ chapters: [epubChapter('第一章 开始', '这是正文，足够长以便分块。')] }) },
-    })
-    try {
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/book/b0/text?from=0' }), res)
-      expect(res.status).toBe(200)
-      const body = JSON.parse(res.body)
-      expect(body.ok).toBe(true)
-      expect(body.text).toContain('第一章')
-    } finally { cleanup() }
-  })
-
-  it('returns a clear 500 (not a crash) for a malformed .epub file', async () => {
-    const { handler, cleanup } = boot({
-      musicFiles: { 'broken.epub': 'definitely not a zip archive' },
-    })
-    try {
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/book/b0/meta' }), res)
-      expect(res.status).toBe(500)
-      expect(String(res.body)).toContain('EPUB')
-    } finally { cleanup() }
-  })
-})
-
-describe('dsh-music-player TTS chunk synthesis & diagnostics', () => {
-  const u32 = (n) => { const b = Buffer.alloc(4); b.writeUInt32LE(n, 0); return b }
-  const u16 = (n) => { const b = Buffer.alloc(2); b.writeUInt16LE(n, 0); return b }
-  // Build a minimal WAV with a fmt chunk (defaults: PCM/1ch/24000Hz/16bit) and a
-  // data chunk of the given bytes. Used to stub the MiMo TTS API response.
-  // `declaredDataSize`/`byteRate` override the header fields to fabricate the
-  // broken WAVs the API occasionally returns (truncated data / wrong byte rate).
-  function pcmWav({ data = Buffer.alloc(0), fmt = 1, ch = 1, rate = 24000, bits = 16, declaredDataSize, byteRate } = {}) {
-    const realByteRate = rate * ch * bits / 8
-    const fmtChunk = Buffer.concat([
-      Buffer.from('fmt ', 'ascii'), u32(16), u16(fmt), u16(ch), u32(rate),
-      u32(byteRate !== undefined ? byteRate : realByteRate), u16(ch * bits / 8), u16(bits),
-    ])
-    const declared = declaredDataSize !== undefined ? declaredDataSize : data.length
-    const dataChunk = Buffer.concat([Buffer.from('data', 'ascii'), u32(declared), data])
-    const body = Buffer.concat([Buffer.from('WAVE', 'ascii'), fmtChunk, dataChunk])
-    return Buffer.concat([Buffer.from('RIFF', 'ascii'), u32(body.length), body])
-  }
-  // Point the TTS provider at a stub returning the given wav as base64 audio.
-  function stubTts(wav) {
-    vi.stubGlobal('fetch', async () => ({
-      ok: true, status: 200,
-      json: async () => ({ choices: [{ message: { audio: { data: wav.toString('base64') } } }] }),
-    }))
-  }
-  // The plugin resolves its key from env/credentials; tests set MIMO_API_KEY.
-  function withTtsKey() {
-    const prev = process.env.MIMO_API_KEY
-    process.env.MIMO_API_KEY = 'test-key'
-    return () => { if (prev === undefined) delete process.env.MIMO_API_KEY; else process.env.MIMO_API_KEY = prev }
-  }
-
-  it('serves a valid synthesized chunk as audio/wav with the exact bytes', async () => {
-    const { handler, cleanup } = boot({ musicFiles: { 'novel.txt': '第一章\n正文内容。\n第二章\n更多正文。' } })
-    const restore = withTtsKey()
-    // realistic 16-bit PCM samples at real-speech amplitude (peak ~16000), so the
-    // silence check passes
-    const sample = (v) => { const b = Buffer.alloc(2); b.writeInt16LE(v, 0); return b }
-    const data = Buffer.concat([sample(16000), sample(-16000), sample(8000), sample(-8000), sample(12000), sample(-12000), sample(2000), sample(-2000)])
-    const wav = pcmWav({ data })
-    try {
-      stubTts(wav)
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/book/b0?from=0' }), res)
-      expect(res.status).toBe(200)
-      expect(res.headers['Content-Type']).toBe('audio/wav')
-      const body = Buffer.isBuffer(res.body) ? res.body : Buffer.from(res.body)
-      expect(body.equals(wav)).toBe(true)
-    } finally { restore(); cleanup(); vi.unstubAllGlobals() }
-  })
-
-  it('rejects a header-only (empty data) wav with a 500 and records the diagnosis', async () => {
-    const { handler, cleanup } = boot({ musicFiles: { 'novel.txt': '第一章\n正文内容。' } })
-    const restore = withTtsKey()
-    try {
-      stubTts(pcmWav({})) // fmt present but data chunk empty
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/book/b0?from=0' }), res)
-      expect(res.status).toBe(500)
-      expect(String(res.body)).toContain('音频数据为空')
-      // the diagnosis is recorded and served at /tts-logs
-      const lres = makeRes()
-      await handler(makeReq({ url: '/dsh-music/tts-logs' }), lres)
-      expect(lres.status).toBe(200)
-      const logs = JSON.parse(lres.body).logs
-      expect(logs.some((l) => l.kind === 'degenerate')).toBe(true)
-    } finally { restore(); cleanup(); vi.unstubAllGlobals() }
-  })
-
-  it('rejects a non-PCM wav (IEEE float) with a 500', async () => {
-    const { handler, cleanup } = boot({ musicFiles: { 'novel.txt': '第一章\n正文内容。' } })
-    const restore = withTtsKey()
-    try {
-      stubTts(pcmWav({ fmt: 3, data: Buffer.alloc(4) })) // fmt=3 = IEEE float
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/book/b0?from=0' }), res)
-      expect(res.status).toBe(500)
-      expect(String(res.body)).toContain('非 PCM')
-    } finally { restore(); cleanup(); vi.unstubAllGlobals() }
-  })
-
-  it('rejects a truncated wav (declared data bigger than the buffer) with a 500', async () => {
-    // A truncated data chunk makes the browser report a long duration and play
-    // silence for the missing remainder — the "没声音但时长差几分钟" symptom.
-    const { handler, cleanup } = boot({ musicFiles: { 'novel.txt': '第一章\n正文内容。' } })
-    const restore = withTtsKey()
-    try {
-      stubTts(pcmWav({ data: Buffer.from([0, 0, 1, 0]), declaredDataSize: 100000 }))
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/book/b0?from=0' }), res)
-      expect(res.status).toBe(500)
-      expect(String(res.body)).toContain('被截断')
-      // the diagnosis is recorded with the wav header details
-      const lres = makeRes()
-      await handler(makeReq({ url: '/dsh-music/tts-logs' }), lres)
-      const logs = JSON.parse(lres.body).logs
-      const degen = logs.find((l) => l.kind === 'degenerate')
-      expect(degen).toBeTruthy()
-      expect(degen.wav.declared).toBe(100000)
-    } finally { restore(); cleanup(); vi.unstubAllGlobals() }
-  })
-
-  it('rejects a wav whose byteRate disagrees with the header (inflated duration) with a 500', async () => {
-    const { handler, cleanup } = boot({ musicFiles: { 'novel.txt': '第一章\n正文内容。' } })
-    const restore = withTtsKey()
-    try {
-      // byteRate is 1/10 of the real 48000 → browser would compute a 10x duration
-      stubTts(pcmWav({ data: Buffer.from([0, 0, 1, 0, 2, 0]), byteRate: 4800 }))
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/book/b0?from=0' }), res)
-      expect(res.status).toBe(500)
-      expect(String(res.body)).toContain('字节率异常')
-    } finally { restore(); cleanup(); vi.unstubAllGlobals() }
-  })
-
-  it('rejects an all-silent wav (zero samples) with a 500', async () => {
-    // A correct-header but silent wav plays as silence for its whole duration.
-    const { handler, cleanup } = boot({ musicFiles: { 'novel.txt': '第一章\n正文内容。' } })
-    const restore = withTtsKey()
-    try {
-      stubTts(pcmWav({ data: Buffer.alloc(4096) })) // 4096 zero bytes = silent 16-bit PCM
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/book/b0?from=0' }), res)
-      expect(res.status).toBe(500)
-      expect(String(res.body)).toContain('静音')
-    } finally { restore(); cleanup(); vi.unstubAllGlobals() }
-  })
-
-  it('resolves the TTS key from the DSH v1 refs:-nested credentials layout', async () => {
-    // DSH >= v1 stores keys under a refs: block at two-space indent.
-    const { handler, cleanup } = boot({
-      files: {
-        '.dsh/settings.yaml': 'llm-pi-ai:\n  providers:\n    xiaomi:\n      apiKeyEnv: XIAOMI_API_KEY\n',
-        '.dsh/.credentials.yaml': 'version: 1\nrefs:\n  XIAOMI_API_KEY: sk-from-refs\n',
-      },
-      musicFiles: { 'novel.txt': '第一章\n正文。' },
-    })
-    try {
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/manifest' }), res)
-      expect(res.status).toBe(200)
-      const manifest = JSON.parse(res.body)
-      expect(manifest.ttsConfigured).toBe(true)
-      expect(manifest.ttsReason).toBe('ok')
-    } finally { cleanup() }
-  })
-
-  it('still resolves the TTS key from the legacy flat credentials layout', async () => {
-    // Pre-v1 DSH wrote keys at column 0; that layout must keep working.
-    const { handler, cleanup } = boot({
-      files: {
-        '.dsh/settings.yaml': 'llm-pi-ai:\n  providers:\n    xiaomi:\n      apiKeyEnv: XIAOMI_API_KEY\n',
-        '.dsh/.credentials.yaml': 'XIAOMI_API_KEY: sk-flat\n',
-      },
-      musicFiles: { 'novel.txt': '第一章\n正文。' },
-    })
-    try {
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/manifest' }), res)
-      expect(res.status).toBe(200)
-      expect(JSON.parse(res.body).ttsConfigured).toBe(true)
-    } finally { cleanup() }
-  })
-
-  it('reports TTS as unconfigured when no xiaomi key is configured', async () => {
-    const { handler, cleanup } = boot({ musicFiles: { 'novel.txt': '第一章\n正文。' } })
-    try {
-      const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/manifest' }), res)
-      expect(res.status).toBe(200)
-      const manifest = JSON.parse(res.body)
-      expect(manifest.ttsConfigured).toBe(false)
-      expect(String(manifest.ttsReason)).toContain('未找到')
-    } finally { cleanup() }
-  })
-})
-
-describe('dsh-music-player playlists', () => {
+describe('dsh-music-plus playlists', () => {
   // helper: run a JSON POST and return the parsed body
   async function post(handler, url, payload) {
     const res = makeRes()
@@ -2127,7 +1356,7 @@ describe('dsh-music-player playlists', () => {
     const { handler, cleanup } = boot({ musicFiles: { 'a.mp3': 'A' } })
     try {
       const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/manifest' }), res)
+      await handler(makeReq({ url: '/dsh-music-plus/manifest' }), res)
       const data = JSON.parse(res.body)
       expect(Array.isArray(data.playlists)).toBe(true)
       const fav = data.playlists.find((p) => p.id === 'pl-fav')
@@ -2142,14 +1371,14 @@ describe('dsh-music-player playlists', () => {
   it('creates a custom playlist and reports it in the manifest', async () => {
     const { handler, cleanup } = boot({ musicFiles: { 'a.mp3': 'A' } })
     try {
-      const r = await post(handler, '/dsh-music/playlist', { name: '通勤' })
+      const r = await post(handler, '/dsh-music-plus/playlist', { name: '通勤' })
       expect(r.status).toBe(200)
       expect(r.data.ok).toBe(true)
       expect(r.data.playlist.id).toMatch(/^pl-/)
       expect(r.data.playlist.name).toBe('通勤')
       expect(r.data.playlist.fixed).toBe(false)
       const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/manifest' }), res)
+      await handler(makeReq({ url: '/dsh-music-plus/manifest' }), res)
       const names = JSON.parse(res.body).playlists.map((p) => p.name)
       expect(names).toContain('通勤')
     } finally { cleanup() }
@@ -2158,7 +1387,7 @@ describe('dsh-music-player playlists', () => {
   it('rejects an empty playlist name', async () => {
     const { handler, cleanup } = boot({ musicFiles: {} })
     try {
-      const r = await post(handler, '/dsh-music/playlist', { name: '   ' })
+      const r = await post(handler, '/dsh-music-plus/playlist', { name: '   ' })
       expect(r.status).toBe(400)
       expect(r.data.ok).toBe(false)
     } finally { cleanup() }
@@ -2171,10 +1400,10 @@ describe('dsh-music-player playlists', () => {
     })
     try {
       const clip = join(home, 'extra', 'clip.mp3')
-      const created = await post(handler, '/dsh-music/playlist', { name: 'P' })
+      const created = await post(handler, '/dsh-music-plus/playlist', { name: 'P' })
       const id = created.data.playlist.id
       // adding the same path twice should dedup; a .txt must be skipped
-      const add = await post(handler, '/dsh-music/playlist/add', {
+      const add = await post(handler, '/dsh-music-plus/playlist/add', {
         id, paths: [clip, clip, join(home, 'extra', 'notes.txt')],
       })
       expect(add.data.ok).toBe(true)
@@ -2182,7 +1411,7 @@ describe('dsh-music-player playlists', () => {
       expect(add.data.playlist.count).toBe(1)
       expect(add.data.playlist.missing).toBe(0)
       expect(add.data.playlist.tracks[0].name).toBe('clip.mp3')
-      expect(add.data.playlist.tracks[0].url.startsWith('/dsh-music/file?path=')).toBe(true)
+      expect(add.data.playlist.tracks[0].url.startsWith('/dsh-music-plus/file?path=')).toBe(true)
       expect(add.data.playlist.tracks[0].size).toBe('CLIPDATA'.length)
       // the generic streaming route serves the playlist member
       const res = makeRes()
@@ -2199,11 +1428,11 @@ describe('dsh-music-player playlists', () => {
     })
     try {
       const clip = join(home, 'extra', 'clip.mp3')
-      const created = await post(handler, '/dsh-music/playlist', { name: 'P' })
-      await post(handler, '/dsh-music/playlist/add', { id: created.data.playlist.id, paths: [clip] })
+      const created = await post(handler, '/dsh-music-plus/playlist', { name: 'P' })
+      await post(handler, '/dsh-music-plus/playlist/add', { id: created.data.playlist.id, paths: [clip] })
       const res = makeRes()
       await handler(makeReq({
-        url: '/dsh-music/file?path=' + encodeURIComponent(clip),
+        url: '/dsh-music-plus/file?path=' + encodeURIComponent(clip),
         headers: { range: 'bytes=2-5' },
       }), res)
       expect(res.status).toBe(206)
@@ -2220,15 +1449,15 @@ describe('dsh-music-player playlists', () => {
       const secret = join(home, 'secret.mp3')
       // never added to any playlist -> not registered
       const forbidden = makeRes()
-      await handler(makeReq({ url: '/dsh-music/file?path=' + encodeURIComponent(secret) }), forbidden)
+      await handler(makeReq({ url: '/dsh-music-plus/file?path=' + encodeURIComponent(secret) }), forbidden)
       expect(forbidden.status).toBe(403)
       // register a real file, then delete it from disk -> still registered, now 404
       const clip = join(home, 'm', 'clip.mp3')
-      const created = await post(handler, '/dsh-music/playlist', { name: 'P' })
-      await post(handler, '/dsh-music/playlist/add', { id: created.data.playlist.id, paths: [clip] })
+      const created = await post(handler, '/dsh-music-plus/playlist', { name: 'P' })
+      await post(handler, '/dsh-music-plus/playlist/add', { id: created.data.playlist.id, paths: [clip] })
       rmSync(clip, { force: true })
       const gone = makeRes()
-      await handler(makeReq({ url: '/dsh-music/file?path=' + encodeURIComponent(clip) }), gone)
+      await handler(makeReq({ url: '/dsh-music-plus/file?path=' + encodeURIComponent(clip) }), gone)
       expect(gone.status).toBe(404)
     } finally { cleanup() }
   })
@@ -2240,10 +1469,10 @@ describe('dsh-music-player playlists', () => {
     try {
       const a = join(home, 'm', 'a.mp3')
       const b = join(home, 'm', 'b.mp3')
-      const created = await post(handler, '/dsh-music/playlist', { name: 'P' })
+      const created = await post(handler, '/dsh-music-plus/playlist', { name: 'P' })
       const id = created.data.playlist.id
-      await post(handler, '/dsh-music/playlist/add', { id, paths: [a, b] })
-      const rm = await post(handler, '/dsh-music/playlist/remove', { id, paths: [a] })
+      await post(handler, '/dsh-music-plus/playlist/add', { id, paths: [a, b] })
+      const rm = await post(handler, '/dsh-music-plus/playlist/remove', { id, paths: [a] })
       expect(rm.data.removed).toBe(1)
       expect(rm.data.playlist.tracks.map((t) => t.name)).toEqual(['b.mp3'])
     } finally { cleanup() }
@@ -2256,22 +1485,22 @@ describe('dsh-music-player playlists', () => {
     try {
       const a = join(home, 'm', 'a.mp3')
       const b = join(home, 'm', 'b.mp3')
-      const created = await post(handler, '/dsh-music/playlist', { name: 'P' })
+      const created = await post(handler, '/dsh-music-plus/playlist', { name: 'P' })
       const id = created.data.playlist.id
-      await post(handler, '/dsh-music/playlist/add', { id, paths: [a, b] })
-      const clr = await post(handler, '/dsh-music/playlist/clear', { id })
+      await post(handler, '/dsh-music-plus/playlist/add', { id, paths: [a, b] })
+      const clr = await post(handler, '/dsh-music-plus/playlist/clear', { id })
       expect(clr.data.ok).toBe(true)
       expect(clr.data.cleared).toBe(2)
       expect(clr.data.playlist.count).toBe(0)
       expect(clr.data.playlist.tracks).toEqual([])
       // fixed 系统歌单也可以清空
-      await post(handler, '/dsh-music/playlist/add', { id: 'pl-fav', paths: [a] })
-      const clrFav = await post(handler, '/dsh-music/playlist/clear', { id: 'pl-fav' })
+      await post(handler, '/dsh-music-plus/playlist/add', { id: 'pl-fav', paths: [a] })
+      const clrFav = await post(handler, '/dsh-music-plus/playlist/clear', { id: 'pl-fav' })
       expect(clrFav.data.cleared).toBe(1)
       expect(clrFav.data.playlist.fixed).toBe(true)
       expect(clrFav.data.playlist.count).toBe(0)
       // unknown id -> 404
-      const nf = await post(handler, '/dsh-music/playlist/clear', { id: 'pl-nope' })
+      const nf = await post(handler, '/dsh-music-plus/playlist/clear', { id: 'pl-nope' })
       expect(nf.status).toBe(404)
     } finally { cleanup() }
   })
@@ -2284,10 +1513,10 @@ describe('dsh-music-player playlists', () => {
       const a = join(home, 'm', 'a.mp3')
       const b = join(home, 'm', 'b.mp3')
       const c = join(home, 'm', 'c.mp3')
-      const created = await post(handler, '/dsh-music/playlist', { name: 'P' })
+      const created = await post(handler, '/dsh-music-plus/playlist', { name: 'P' })
       const id = created.data.playlist.id
-      await post(handler, '/dsh-music/playlist/add', { id, paths: [a, b, c] })
-      const re = await post(handler, '/dsh-music/playlist/reorder', { id, paths: [c, a] })
+      await post(handler, '/dsh-music-plus/playlist/add', { id, paths: [a, b, c] })
+      const re = await post(handler, '/dsh-music-plus/playlist/reorder', { id, paths: [c, a] })
       expect(re.data.ok).toBe(true)
       expect(re.data.playlist.tracks.map((t) => t.name)).toEqual(['c.mp3', 'a.mp3', 'b.mp3'])
     } finally { cleanup() }
@@ -2296,11 +1525,11 @@ describe('dsh-music-player playlists', () => {
   it('renames a custom playlist but rejects renaming the fixed one', async () => {
     const { handler, cleanup } = boot({ musicFiles: {} })
     try {
-      const created = await post(handler, '/dsh-music/playlist', { name: 'P' })
-      const ok = await post(handler, '/dsh-music/playlist/rename', { id: created.data.playlist.id, name: '新名字' })
+      const created = await post(handler, '/dsh-music-plus/playlist', { name: 'P' })
+      const ok = await post(handler, '/dsh-music-plus/playlist/rename', { id: created.data.playlist.id, name: '新名字' })
       expect(ok.data.ok).toBe(true)
       expect(ok.data.playlist.name).toBe('新名字')
-      const fixed = await post(handler, '/dsh-music/playlist/rename', { id: 'pl-fav', name: '改' })
+      const fixed = await post(handler, '/dsh-music-plus/playlist/rename', { id: 'pl-fav', name: '改' })
       expect(fixed.status).toBe(400)
       expect(fixed.data.ok).toBe(false)
     } finally { cleanup() }
@@ -2309,10 +1538,10 @@ describe('dsh-music-player playlists', () => {
   it('deletes a custom playlist but rejects deleting the fixed one', async () => {
     const { handler, cleanup } = boot({ musicFiles: {} })
     try {
-      const created = await post(handler, '/dsh-music/playlist', { name: 'P' })
-      const ok = await post(handler, '/dsh-music/playlist/delete', { id: created.data.playlist.id })
+      const created = await post(handler, '/dsh-music-plus/playlist', { name: 'P' })
+      const ok = await post(handler, '/dsh-music-plus/playlist/delete', { id: created.data.playlist.id })
       expect(ok.data.ok).toBe(true)
-      const fixed = await post(handler, '/dsh-music/playlist/delete', { id: 'pl-fav' })
+      const fixed = await post(handler, '/dsh-music-plus/playlist/delete', { id: 'pl-fav' })
       expect(fixed.status).toBe(400)
       expect(fixed.data.ok).toBe(false)
     } finally { cleanup() }
@@ -2321,7 +1550,7 @@ describe('dsh-music-player playlists', () => {
   it('persists playlists to the state file and reloads a pre-seeded file', async () => {
     const { handler, home, cleanup } = boot({
       files: {
-        '.dsh/music-player-playlists.json': JSON.stringify({
+        '.dsh/dsh-music-plus-playlists.json': JSON.stringify({
           version: 1,
           playlists: [{ id: 'pl-seed', name: '预置歌单', fixed: false, trackPaths: [], createdAt: 1, updatedAt: 1 }],
         }),
@@ -2329,13 +1558,13 @@ describe('dsh-music-player playlists', () => {
     })
     try {
       const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/manifest' }), res)
+      await handler(makeReq({ url: '/dsh-music-plus/manifest' }), res)
       const names = JSON.parse(res.body).playlists.map((p) => p.name)
       expect(names).toContain('预置歌单') // loaded from the pre-seeded file
       expect(names).toContain('我最喜欢') // system playlist still guaranteed
       // a create writes the file back
-      await post(handler, '/dsh-music/playlist', { name: '持久' })
-      const file = join(home, '.dsh', 'music-player-playlists.json')
+      await post(handler, '/dsh-music-plus/playlist', { name: '持久' })
+      const file = join(home, '.dsh', 'dsh-music-plus-playlists.json')
       expect(existsSync(file)).toBe(true)
       const saved = JSON.parse(readFileSync(file, 'utf8'))
       expect(saved.playlists.map((p) => p.name)).toContain('持久')
@@ -2348,7 +1577,7 @@ describe('dsh-music-player playlists', () => {
     })
     try {
       const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/files?path=' + encodeURIComponent(join(home, 'Music')) }), res)
+      await handler(makeReq({ url: '/dsh-music-plus/files?path=' + encodeURIComponent(join(home, 'Music')) }), res)
       const data = JSON.parse(res.body)
       expect(res.status).toBe(200)
       expect(data.dirs.map((d) => d.name)).toEqual(['sub'])
@@ -2358,21 +1587,21 @@ describe('dsh-music-player playlists', () => {
     } finally { cleanup() }
   })
 
-  it('plays a playlist via the music_play playlist param', async () => {
+  it('plays a playlist via the music_play_plus playlist param', async () => {
     const { handler, tools, home, cleanup } = boot({
       files: { 'm/a.mp3': 'A', 'm/b.mp3': 'B' },
     })
     try {
-      const created = await post(handler, '/dsh-music/playlist', { name: '最爱' })
+      const created = await post(handler, '/dsh-music-plus/playlist', { name: '最爱' })
       const pl = created.data.playlist
-      await post(handler, '/dsh-music/playlist/add', { id: pl.id, paths: [join(home, 'm', 'a.mp3')] })
-      const tool = tools.find((t) => t.name === 'music_play')
+      await post(handler, '/dsh-music-plus/playlist/add', { id: pl.id, paths: [join(home, 'm', 'a.mp3')] })
+      const tool = tools.find((t) => t.name === 'music_play_plus')
       const out = await tool.execute({ playlist: '最爱' })
       expect(out.played).toBe(true)
       expect(out.matches).toBe(1)
       expect(out.track).toBe('a.mp3')
       const res = makeRes()
-      await handler(makeReq({ url: '/dsh-music/intent' }), res)
+      await handler(makeReq({ url: '/dsh-music-plus/intent' }), res)
       const intent = JSON.parse(res.body)
       expect(intent.action).toBe('play')
       expect(intent.playlistId).toBe(pl.id)
@@ -2381,10 +1610,10 @@ describe('dsh-music-player playlists', () => {
     } finally { cleanup() }
   })
 
-  it('reports an unknown playlist name via music_play', async () => {
+  it('reports an unknown playlist name via music_play_plus', async () => {
     const { tools, cleanup } = boot({ musicFiles: { 'a.mp3': 'A' } })
     try {
-      const tool = tools.find((t) => t.name === 'music_play')
+      const tool = tools.find((t) => t.name === 'music_play_plus')
       const out = await tool.execute({ playlist: '不存在的歌单' })
       expect(out.played).toBe(false)
       expect(out.notice).toContain('没有找到歌单')

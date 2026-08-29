@@ -1,8 +1,8 @@
-# dsh-music-player bundle patch: inserts the dual-face plugin row into the web
+# dsh-music-plus bundle patch: inserts the dual-face plugin row into the web
 # profile roster. The node half (exports ".") runs in the host process (audio
-# streaming, music-library scan, and the music_play model tool), and the
+# streaming, music-library scan, and the music_play_plus model tool), and the
 # dsh.client declaration in package.json loads the browser half (exports
 # "./client") in the web GUI.
 - insert:
-    - id: music-player
-      name: 'dsh-music-player'
+    - id: music-player-plus
+      name: 'dsh-music-plus'

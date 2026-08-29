@@ -1,24 +1,21 @@
 # Contributing / 贡献指南
 
-Thanks for wanting to contribute to **dsh-music-player**! / 感谢你参与 dsh-music-player 的开发！
+Thanks for wanting to contribute to **dsh-music-plus**! / 感谢你参与 dsh-music-plus 的开发！
 
 ## Structure / 项目结构
 
 ```
-dsh-music-player/
+dsh-music-plus/
 ├── lib/
-│   ├── index.js     # Host 端：音乐扫描、HTTP 流式、歌单 CRUD、music_play 工具
-│   ├── qq.js        # QQ 音乐接口封装（登录/搜索/取链/歌词/歌单）
-│   ├── lyric.js     # 本地歌曲在线歌词兜底：LRCLIB 封装 + 匹配打分 + QQ→LRCLIB 编排
-│   └── client.js    # Web 端：浏览器里的播放条 / 播放面板 / 频谱 / 歌单
+│   ├── index.js     # Host 端：音乐扫描、HTTP 流式、歌单 CRUD、播客 RSS、music_play_plus 工具
+│   ├── podcast.js   # 播客 RSS/Atom 解析（fetch 由 Host 调用，本模块只做纯解析）
+│   └── client.js    # Web 端：浏览器里的播放条 / 播放面板 / 频谱 / 歌单 / 播客
 ├── docs/
-│   ├── playlists-design.md        # 自建歌单功能设计定稿（v3）
-│   ├── online-music-feasibility.md# 在线 QQ 音乐功能实现文档
-│   └── online-lyrics-feasibility.md # 本地歌曲在线歌词功能实现文档
+│   └── playlists-design.md        # 自建歌单功能设计定稿（v3）
 ├── cordis.patch.yml # 把插件行插入 profile 的 bundle patch
 ├── test/
 │   ├── index.test.js  # Host 端 vitest（假 ctx + 临时目录驱动真实路由）
-│   ├── lyric.test.js  # lyric.js 单测（打分/归一化/getOnlineLyric 编排）
+│   ├── podcast.test.js # podcast.js 纯解析单测
 │   └── client.test.js # Web 端渲染冒烟/交互测试（jsdom + react-dom）
 └── package.json      # 声明 dsh.bundle manifest 与 test/ci scripts
 ```
@@ -43,8 +40,10 @@ npm run test:watch  # 监听模式
 测试策略：`test/index.test.js` 用一个假 `ctx` 驱动 `lib/index.js` 的真实 `apply()`——
 
 - `ctx.fs` 背后是对应一个真实临时目录（`scan`/`stat`/`readBytes` 走真实文件）；
-- `ctx.webServer.register` 捕获 HTTP handler，测试再用手写的假 `req`/`res` 逐条打路由（manifest / set-root / Range / seek / HEAD / 404）；
+- `ctx.webServer.register` 捕获 HTTP handler，测试再用手写的假 `req`/`res` 逐条打路由（manifest / set-root / Range / seek / HEAD / 404 / 播客）；
 - 「临时 home」通过 `process.env.HOME` 与 `process.env.DSH_HOME` 隔离，测完清理。
+
+> 部分受限环境（企业安全软件/沙箱）会拦截 vitest 默认的 forks 子进程池，导致 `EPERM`。`package.json` 里的 `test`/`ci` 已用 `--pool=threads` 规避（对常规环境同样有效）。
 
 改动 `lib/` 后请确保 `npm test` 全绿再提交。
 
