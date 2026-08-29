@@ -277,9 +277,10 @@ describe('dsh-music-plus podcast', () => {
     await act(async () => { await new Promise((r) => setTimeout(r, 0)) })
     // wait for the debounced prefs flush (800ms) + the POST to settle
     await act(async () => { await new Promise((r) => setTimeout(r, 900)) })
-    const raw = prefsServer['dsh-music-podcast-playback']
+    const raw = prefsServer['dsh-music-playback']
     expect(raw, 'prefsServer keys=' + JSON.stringify(Object.keys(prefsServer)) + ' raw=' + (raw ? raw.slice(0, 120) : '')).toBeTruthy()
     const saved = JSON.parse(raw)
+    expect(saved.kind).toBe('podcast')
     expect(saved.podId).toBeTruthy()
     expect(saved.epIdx).toBe(0)
     expect(saved.queue).toBeTruthy()
@@ -289,8 +290,8 @@ describe('dsh-music-plus podcast', () => {
   it('restores the last podcast from the Host prefs after a reload', async () => {
     // Simulate a previous session that saved a podcast at EP1/12s. Re-boot fresh
     // so loadTracks reads the populated prefs and restores the podcast.
-    prefsServer['dsh-music-podcast-playback'] = JSON.stringify({
-      podId: 'pod-new', epIdx: 0, name: 'EP1', position: 12, duration: 120,
+    prefsServer['dsh-music-playback'] = JSON.stringify({
+      kind: 'podcast', podId: 'pod-new', epIdx: 0, name: 'EP1', position: 12, duration: 120,
       queue: [{ title: 'EP1', url: 'http://cdn/e1.mp3' }, { title: 'EP2', url: 'http://cdn/e2.mp3' }],
       queueSource: { podId: 'pod-new', title: '测试播客' },
     })
