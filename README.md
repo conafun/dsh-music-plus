@@ -1,6 +1,6 @@
 # dsh-music-plus
 
-> 一个基于 **dsh-music-player** 修改而来的 DeepSeek Harness 本地音乐 / 播客插件。它保留本地音乐播放、频谱可视化、自建歌单，**移除**了原版的在线 QQ 音乐、在线酷狗音乐、AI 讲书（TTS）、实时歌词/字幕，并**新增**了**播客 RSS 订阅与在线播放**。为与原版共存不混淆，包名与内部标识已整体改名为 **dsh-music-plus**（独立插件行、独立 `/dsh-music-plus/*` 路由、独立状态文件、独立 `music_play_plus` 工具）。
+> 一个基于 **dsh-music-player** 修改而来的 DeepSeek Harness 本地音乐 / 播客 / 网络电台插件。它保留本地音乐播放、频谱可视化、自建歌单，**移除**了原版的在线 QQ 音乐、在线酷狗音乐、AI 讲书（TTS）、实时歌词/字幕，并**新增**了**播客 RSS 订阅与在线播放**与**网络电台**（内置 CC0 电台库）。为与原版共存不混淆，包名与内部标识已整体改名为 **dsh-music-plus**（独立插件行、独立 `/dsh-music-plus/*` 路由、独立状态文件、独立 `music_play_plus` 工具）。
 
 ---
 
@@ -34,7 +34,14 @@
    - 模型工具 `music_play` → `music_play_plus`（`systemPrompt` 同步更新）。
    - `lib/index.js` 的 `inject` 移除已不使用的 `llm`。
 7. **目录选择器跨盘符修复**：给「选择音乐目录」与歌单「添加歌曲」等选择器加了「⬆ 上级目录」/「⬆ 本机磁盘（切换盘符）」按钮，解决 Windows 上只能选 `C:\Users\...\Music`、选不到 `E:\` / `F:\` 的问题（根因是客户端 `browse()` 未使用服务端返回的 `up` 字段）。
-8. **精简与测试同步**：删除对应旧测试（`qq*`、`kugou*`、`kg-*`、`lyric`、`qrc`），重写 `test/index.test.js` 与 `test/client.test.js`，新增 `test/podcast.test.js`；`docs/` 删除已过时的 QQ/酷狗/在线歌词等调研文档，保留 `playlists-design.md`。调整 `package.json` 的 description / keywords / `test` 脚本（`--pool=threads` 以规避部分环境 fork 池 `EPERM`）。
+8. **新增网络电台**：
+   - 新增 `lib/radio.js`（零依赖解析：M3U/M3U8、PLS、XSPF、ASX、README 电台清单、radio-browser JSON）与 `lib/radio-host.js`（电台库状态、源管理、探活、路由）。
+   - 内置 **[conafun/recommended-radio-streams](https://github.com/conafun/recommended-radio-streams)**（**CC0 1.0**，可自由内置）的快照 `lib/radio-data.json`：**16 个风格、432 台**；可在设置页一键从 GitHub 更新，且**用户的收藏/隐藏/改名按电台 id 全部保留**。
+   - **界面只放在设置页**：`settings.section` 新增「网络电台」独立一页（风格分类浏览、搜索、收藏、探活、添加单台、导入外部电台源、风格管理）。**播放面板与播放条不新增任何东西**，播放复用现有 `<audio>` 引擎。
+   - 直播语义：无进度、不能快进；断流按 1/2/4/8/12 秒退避自动重连，5 次失败自动换台；`.pls/.m3u` 清单由 Host 解析成真实流地址；`.m3u8(HLS)` 标「需 HLS」并置灰。
+   - `music_play_plus` 增加 `radio` / `radioCategory` 参数（对话里说「放个爵士电台」即可）。
+   - 电台库独立持久化到 `~/.dsh/dsh-music-plus-radio.json`；新增测试 `test/radio.test.js`。
+9. **精简与测试同步**：删除对应旧测试（`qq*`、`kugou*`、`kg-*`、`lyric`、`qrc`），重写 `test/index.test.js` 与 `test/client.test.js`，新增 `test/podcast.test.js`；`docs/` 删除已过时的 QQ/酷狗/在线歌词等调研文档，保留 `playlists-design.md`。调整 `package.json` 的 description / keywords / `test` 脚本（`--pool=threads` 以规避部分环境 fork 池 `EPERM`）。
 
 ---
 
@@ -53,11 +60,13 @@
 | AI 讲书（TTS 朗读小说） | ✅ | ❌（移除） |
 | 实时歌词 / 字幕 | ✅ | ❌（移除） |
 | **播客 RSS 订阅 + 在线播放** | ❌ | ✅（**新增，亮点**） |
+| **网络电台（内置 432 台 / 16 风格）** | ❌ | ✅（**新增，亮点**） |
 | 目录选择器跨盘符（E/F 盘） | ⚠️ 选不到 | ✅（修复） |
 
 **亮点：**
 - **多订阅源聚合视图**：顶部一排订阅源卡片，默认展示**所有源的最新单集**（新→旧、带来源徽标），点具体源只看它，点「全部」返回聚合——订阅再多也不乱。
-- **纯本地解析**：播客 RSS/Atom 解析无第三方依赖（`lib/podcast.js`），Host 用 Node 内置 `fetch` 拉取，`music_play_plus` 工具让 agent 可搜索本地音乐/歌单。
+- **纯本地解析**：播客 RSS/Atom 解析无第三方依赖（`lib/podcast.js`），Host 用 Node 内置 `fetch` 拉取，`music_play_plus` 工具让 agent 可搜索本地音乐/歌单/电台。
+- **网络电台，零配置开箱可用**：内置 CC0 电台库（16 个风格 / 432 台），打开「设置 → 网络电台」点 ▶ 就能听；支持搜索、收藏、一键探活（🟢/🔴）、按风格筛选。也能手填单台或整批导入 M3U / PLS / XSPF / ASX / radio-browser 源。**电台界面只在设置页**，播放面板保持干净。
 - **与原版完全隔离**：独立插件行、独立 `/dsh-music-plus/*` 路由、独立状态文件，可与原版**并存**不冲突；模型工具改为 `music_play_plus` 避免与 `music_play` 重复注册。
 
 ---
@@ -80,6 +89,7 @@
 - 播放时申请屏幕唤醒锁
 - **自建歌单**（新建/添加歌曲/排序/清空；播放条爱心收藏到「我最喜欢」）
 - **播客订阅**（订阅/刷新/退订；聚合视图 + 单源详情；在线播放）
+- **网络电台**（内置 CC0 库 16 风格 / 432 台；自定义电台与外部电台源；探活；按风格分类；断流自动重连；HLS 台标记并置灰）
 - 支持格式：`mp3 / m4a / m4b / aac / flac / wav / ogg / opus / webm / aiff`（递归扫描，上限 500 首）
 - **真实音质识别**：解析文件头显示「格式 · 音质档」（如 `FLAC · 无损`）
 
@@ -118,6 +128,7 @@ dsh plugin --profile web add F:\DeepseekHarness\dsh-music-plus
 重启 DSH 或刷新 `http://127.0.0.1:3080`，聊天区上方会出现「DSH音乐播放器」播放条；点「列表」打开面板：
 - **本地音乐**：点「选择音乐目录」选音乐目录（默认 `~/Music`）→ 自动扫描 → 点歌播放。
 - **播客**：粘贴任意 RSS / Atom 订阅链接，点「订阅」，顶部源卡片选源、默认看「全部」聚合最新单集，点任意一集在线播放。
+- **网络电台**：点侧边栏「设置 → 网络电台」。内置 16 个风格共 432 台，按风格或搜索挑一台，点行首 ▶ 即用播放条播放；也可以在「＋ 添加 / 编辑电台」「电台源」里自己加台或整批导入外部电台源。
 
 ### 4. （可选）让 agent 直接播放
 
@@ -174,12 +185,33 @@ dsh plugin --profile web remove dsh-music-plus
 
 ---
 
+## 网络电台使用一览
+
+入口：**设置（侧边栏底部）→ 网络电台**。电台的全部界面都在这一页，播放面板与播放条不新增任何东西。
+
+- **内置库**：来自 [conafun/recommended-radio-streams](https://github.com/conafun/recommended-radio-streams)（**CC0 1.0**）的快照，**16 个风格 / 432 台**（电子、爵士·布鲁斯、氛围·Lo-Fi、金属·重型、新闻·谈话、游戏·芯片音乐、世界音乐……）。
+- **挑台**：顶部按风格筛选（含「全部」「★ 收藏」「已隐藏」），或用搜索框按台名/风格/主页搜。
+- **播放**：点行首 ▶，用现有播放条播放。直播流**没有进度、不能快进**；断流会自动重连（1/2/4/8/12 秒退避），5 次仍失败自动切下一台。
+- **收藏**：行尾 ☆ 收藏，出现在「★ 收藏」里。
+- **探活**：「检测当前列表」/「检测全部」会并发探测每台是否还能连上，结果显示为 🟢（含延迟）/ 🔴（含原因）/ ⚪（未检测），鼠标悬停可看是多久前测的。
+- **添加单台**：「＋ 添加 / 编辑电台」填 流地址（必填）、名称、主页、风格、标签。`.pls / .m3u` 清单地址也支持（播放前由 Host 解析出真实流地址）。
+- **导入外部源**：「电台源」里粘一个清单链接即可整批导入，支持 **M3U/M3U8、PLS、XSPF、ASX**，以及 **radio-browser.info 的 JSON**（例：`https://de1.api.radio-browser.info/json/stations/bytag/jazz?limit=100`）。
+- **风格管理**：新建自定义风格、隐藏不听的风格、改名、↑↓ 调整顺序（顺序即电台列表的分组顺序）。
+- **内置库更新**：「从 GitHub 更新」重拉上游 README；**你的收藏、隐藏、改名、自定义电台全部按电台 id 保留**。想退回插件自带快照点「恢复内置」。
+- **让 agent 放电台**：直接说「放个爵士电台」「播放 NTS」，agent 会用 `music_play_plus` 的 `radio` / `radioCategory` 参数点播。
+
+**已知取舍**：`.m3u8`（HLS）直播共 12 台，浏览器原生 `<audio>` 播不了，界面会标「需 HLS」并置灰（要支持需要引入约 1MB 的 hls.js，本版不做）。电台流直连播放不需要 CORS；未开 CORS 的源只是频谱不显示，**播放不受影响**。
+
+---
+
+---
+
 ## 测试
 
 ```powershell
 cd <项目根目录>
 npm install          # 安装开发依赖（vitest / react / jsdom）
-npm test             # 跑全量：Host 单测 + 播客解析 + Web 渲染冒烟
+npm test             # 跑全量：Host 单测 + 播客解析 + 网络电台（解析器/电台库/设置页）+ Web 渲染冒烟
 ```
 
 > 若 `npm test` 报 `spawn EPERM`（fork 池被部分环境拦截），`package.json` 的 `test`/`ci` 已用 `--pool=threads` 规避。

@@ -1,0 +1,2315 @@
+{
+ "version": 1,
+ "source": {
+  "id": "builtin-recommended",
+  "kind": "builtin",
+  "name": "推荐网络电台",
+  "url": "https://github.com/conafun/recommended-radio-streams",
+  "raw": "https://raw.githubusercontent.com/conafun/recommended-radio-streams/main/README.md",
+  "license": "CC0-1.0",
+  "revision": "ee4dc39329953e82e71e78dc28d4d61209a440eb"
+ },
+ "generatedAt": "2026-09-17T12:08:42.327Z",
+ "categories": [
+  {
+   "id": "ambient-lo-fi-chill",
+   "name": "Ambient, Lo-Fi & Chill",
+   "nameZh": "氛围 · Lo-Fi · 放松",
+   "order": 0,
+   "stations": [
+    {
+     "name": "9128",
+     "url": "https://streams.radio.co/s0aa1e6f4a/listen",
+     "homepage": "https://9128.live"
+    },
+    {
+     "name": "a.m. Ambient",
+     "url": "http://radio.stereoscenic.com/ama-h",
+     "homepage": "https://amambient.com/"
+    },
+    {
+     "name": "Ambient Sleeping Pill",
+     "url": "http://radio.stereoscenic.com/asp-h",
+     "homepage": "https://stereoscenic.com/"
+    },
+    {
+     "name": "Ambient.FM",
+     "url": "https://phoebe.streamerr.co:4140/ambient.mp3",
+     "homepage": "https://ambient.fm/"
+    },
+    {
+     "name": "Ambinature Radio",
+     "url": "https://nature-rex.radioca.st/stream",
+     "homepage": "https://www.ambinature.xyz/"
+    },
+    {
+     "name": "Birdsong FM",
+     "url": "https://a1.radio.co/s5c5da6a36/listen",
+     "homepage": "https://www.birdsong.fm/"
+    },
+    {
+     "name": "ChillTraxx",
+     "url": "https://streamssleu.chilltrax.com/stream",
+     "homepage": "https://www.chilltrax.com/"
+    },
+    {
+     "name": "CodeRadio",
+     "url": "https://coderadio-admin-v2.freecodecamp.org/listen/coderadio/radio.mp3",
+     "homepage": "https://www.freecodecamp.org/news/code-radio/"
+    },
+    {
+     "name": "Dark Ambient Radio",
+     "url": "http://s3.viastreaming.net:8835/,",
+     "homepage": "https://www.darkambientradio.de/news.php"
+    },
+    {
+     "name": "Dinamo.FM - Sleep",
+     "url": "http://channels.dinamo.fm/sleep-mp3",
+     "homepage": "https://dinamo.fm/content/4/channels"
+    },
+    {
+     "name": "Echoes of Bluemars - Bluemars",
+     "url": "http://streams.echoesofbluemars.org:8000/bluemars",
+     "homepage": "http://echoesofbluemars.org/",
+     "label": "Bluemars"
+    },
+    {
+     "name": "Echoes of Bluemars - Cryosleep",
+     "url": "http://streams.echoesofbluemars.org:8000/cryosleep",
+     "homepage": "http://echoesofbluemars.org/",
+     "label": "Cryosleep"
+    },
+    {
+     "name": "Echoes of Bluemars - Voices From Within",
+     "url": "http://streams.echoesofbluemars.org:8000/voicesfromwithin",
+     "homepage": "http://echoesofbluemars.org/",
+     "label": "Voices From Within"
+    },
+    {
+     "name": "Fluid Radio",
+     "url": "http://uk4-vn.webcast-server.net:9270/,",
+     "homepage": "https://www.fluid-radio.co.uk/"
+    },
+    {
+     "name": "The Kyoto Connection",
+     "url": "https://server.laradio.online:59009/live",
+     "homepage": "https://www.thekyotoconnection.com/"
+    },
+    {
+     "name": "Lofi Radio",
+     "url": "https://boxradio-edge-00.streamafrica.net/lofi",
+     "homepage": "https://boxradio.net/en/radio/lofi-radio"
+    },
+    {
+     "name": "Moon Phase Radio - Ambient",
+     "url": "https://cp12.serverse.com/proxy/moonphase/stream",
+     "homepage": "https://www.moonphaseradio.com/"
+    },
+    {
+     "name": "Moss Garden",
+     "url": "https://radio.moss.garden/listen/moss_garden/radio.mp3",
+     "homepage": "https://moss.garden"
+    },
+    {
+     "name": "Nordic Lodge",
+     "url": "http://radio.streemlion.com:1160/stream",
+     "homepage": "https://www.nordiclodgeradio.com/"
+    },
+    {
+     "name": "NTS - Field Recordings",
+     "url": "https://stream-mixtape-geo.ntslive.net/mixtape23",
+     "homepage": "https://www.nts.live/infinite-mixtapes/field-recordings"
+    },
+    {
+     "name": "NTS - Slow Focus",
+     "url": "https://stream-mixtape-geo.ntslive.net/mixtape",
+     "homepage": "https://www.nts.live/infinite-mixtapes/slow-focus"
+    },
+    {
+     "name": "Psyndora - Chillout",
+     "url": "https://cast.magicstreams.gr:9125/;",
+     "homepage": "https://www.psyndora.com/chill.html"
+    },
+    {
+     "name": "Radio Isla Negra - Slowbeat",
+     "url": "https://radioislanegra.org/radio/8000/basic.aac",
+     "homepage": "https://www.radioislanegra.com/"
+    },
+    {
+     "name": "Rain & Thunderstorms Sounds",
+     "url": "https://boxradio-edge-01.streamafrica.net/rain",
+     "homepage": "https://boxradio.net/en/radio/rain-thunderstorms-sounds"
+    },
+    {
+     "name": "Sleepbot Environmental Broadcast",
+     "url": "http://primarystream.sleepbot.com:8218/seb",
+     "homepage": "https://sleepbot.com/ambience/broadcast/"
+    },
+    {
+     "name": "Sleepscapes - Rain",
+     "url": "https://stream.willstare.com:8850/,",
+     "homepage": "https://www.willstare.com/sleep/",
+     "label": "Rain"
+    },
+    {
+     "name": "Sleepscapes - Waves",
+     "url": "https://stream.willstare.com:8860/,",
+     "homepage": "https://www.willstare.com/sleep/",
+     "label": "Waves"
+    },
+    {
+     "name": "SomaFM - Drone Zone",
+     "url": "https://somafm.com/dronezone256.pls",
+     "homepage": "https://somafm.com/listen/"
+    },
+    {
+     "name": "SomaFM - Groove Salad",
+     "url": "https://somafm.com/groovesalad256.pls",
+     "homepage": "https://somafm.com/groovesalad/"
+    },
+    {
+     "name": "Subsonic Radio - SR One",
+     "url": "https://www.subsonicradio.com:8443/requests.mp3",
+     "homepage": "https://www.subsonicradio.com/",
+     "label": "SR One"
+    },
+    {
+     "name": "Subsonic Radio - SR Two - Extended Plays",
+     "url": "https://www.subsonicradio.com:8443/longbois.mp3",
+     "homepage": "https://www.subsonicradio.com/",
+     "label": "SR Two - Extended Plays"
+    },
+    {
+     "name": "Subsonic Radio - WEDWay PeopleMover",
+     "url": "https://www.subsonicradio.com:8443/wedway.mp3",
+     "homepage": "https://www.subsonicradio.com/",
+     "label": "WEDWay PeopleMover"
+    }
+   ]
+  },
+  {
+   "id": "classical-opera",
+   "name": "Classical & Opera",
+   "nameZh": "古典与歌剧",
+   "order": 1,
+   "stations": [
+    {
+     "name": "Ancient FM",
+     "url": "https://mediaserv73.live-streams.nl:18058/stream",
+     "homepage": "https://ancientfm.com/"
+    },
+    {
+     "name": "BBC Radio 3",
+     "url": "http://as-hls-ww-live.akamaized.net/pool_23461179/live/ww/bbc_radio_three/bbc_radio_three.isml/bbc_radio_three-audio%3d128000.norewind.m3u8",
+     "homepage": "https://www.bbc.co.uk/sounds/play/live/bbc_radio_three"
+    },
+    {
+     "name": "Classical California",
+     "url": "https://14103.live.streamtheworld.com/KUSCAAC96.aac",
+     "homepage": "https://www.classicalcalifornia.org/"
+    },
+    {
+     "name": "Concertzender - Baroque",
+     "url": "http://streams.greenhost.nl:8080/barok",
+     "homepage": "https://www.concertzender.nl/"
+    },
+    {
+     "name": "CRB Classical 99.5",
+     "url": "https://wgbh-live.streamguys1.com/classical-hi",
+     "homepage": "https://www.classicalwcrb.org/"
+    },
+    {
+     "name": "France Musique",
+     "url": "http://icecast.radiofrance.fr/francemusique-hifi.aac",
+     "homepage": "https://www.radiofrance.fr/francemusique"
+    },
+    {
+     "name": "France Musique - La Contemporaine",
+     "url": "http://icecast.radiofrance.fr/francemusiquelacontemporaine-hifi.aac",
+     "homepage": "https://www.radiofrance.fr/francemusique/radio-contemporaine"
+    },
+    {
+     "name": "Linn Classical",
+     "url": "http://radio.linn.co.uk:8004/stream",
+     "homepage": "https://www.linn.co.uk/linn-radio"
+    },
+    {
+     "name": "MRG.fm - OperaRadio",
+     "url": "http://listen.mrg.fm:8110/,",
+     "homepage": "https://www.w.mrg.fm/"
+    },
+    {
+     "name": "NTS - Sheet Music",
+     "url": "https://stream-mixtape-geo.ntslive.net/mixtape35",
+     "homepage": "https://www.nts.live/infinite-mixtapes/sheet-music"
+    },
+    {
+     "name": "Radio Suisse Classique",
+     "url": "http://stream.srg-ssr.ch/m/rsc_fr/mp3_128",
+     "homepage": "https://www.radioswissclassic.ch/en"
+    },
+    {
+     "name": "WBJC 91.5",
+     "url": "https://ice64.securenetsystems.net/WBJC",
+     "homepage": "https://www.wbjc.com/"
+    },
+    {
+     "name": "WFMT",
+     "url": "https://wfmt.streamguys1.com/main-source",
+     "homepage": "https://www.wfmt.com/"
+    },
+    {
+     "name": "Whisperings: Solo Piano Radio",
+     "url": "https://pianosolo.streamguys1.com/live",
+     "homepage": "https://www.solopianoradio.com/"
+    },
+    {
+     "name": "WMNR",
+     "url": "https://wmnr.streamguys1.com/live",
+     "homepage": "https://www.wmnr.org/"
+    },
+    {
+     "name": "WQXR 105.9",
+     "url": "http://stream.wqxr.org/wqxr",
+     "homepage": "https://www.wqxr.org/"
+    },
+    {
+     "name": "WQXR Q2",
+     "url": "http://q2stream.wqxr.org/q2",
+     "homepage": "https://www.wqxr.org/series/q2"
+    }
+   ]
+  },
+  {
+   "id": "campus-public-radio",
+   "name": "Campus & Public Radio",
+   "nameZh": "校园与公共电台",
+   "order": 2,
+   "stations": [
+    {
+     "name": "BFF.fm",
+     "url": "http://stream.bff.fm/1/BFF.fm.mp3",
+     "homepage": "https://bff.fm/"
+    },
+    {
+     "name": "CIUT 89.5",
+     "url": "https://ice23.securenetsystems.net/CIUT",
+     "homepage": "https://www.ciut.fm/"
+    },
+    {
+     "name": "CKUT 90.3",
+     "url": "https://ckut.out.airtime.pro/ckut_a",
+     "homepage": "https://ckut.ca"
+    },
+    {
+     "name": "KALX 90.7",
+     "url": "https://stream.kalx.berkeley.edu:8443/kalx-320.aac",
+     "homepage": "https://kalx.berkeley.edu/"
+    },
+    {
+     "name": "KCRW - Eclectic24",
+     "url": "https://streams.kcrw.com/e24_mp3",
+     "homepage": "https://www.kcrw.com/"
+    },
+    {
+     "name": "KFJC 89.7",
+     "url": "http://netcast.kfjc.org/kfjc-320k-aac",
+     "homepage": "https://kfjc.org"
+    },
+    {
+     "name": "KSPC 88.7",
+     "url": "https://kspc.radioca.st/stream",
+     "homepage": "https://kspc.org/"
+    },
+    {
+     "name": "KUSF",
+     "url": "https://listen.kusf.org/stream",
+     "homepage": "https://www.kusf.org"
+    },
+    {
+     "name": "KUTX 98.9",
+     "url": "https://streams.kut.org/4428_192.mp3",
+     "homepage": "https://kutx.org"
+    },
+    {
+     "name": "KVRX 91.7",
+     "url": "https://kvrx.org/now_playing/stream",
+     "homepage": "https://kvrx.org/"
+    },
+    {
+     "name": "KXLU 88.9",
+     "url": "https://kxlu.streamguys1.com/kxlu-hi",
+     "homepage": "https://kxlu.com/"
+    },
+    {
+     "name": "KZSU Stanford 90.1",
+     "url": "http://kzsu-streams.stanford.edu/kzsu-1-256.mp3",
+     "homepage": "https://kzsu.stanford.edu"
+    },
+    {
+     "name": "Prun'",
+     "url": "https://www.prun.net/stream",
+     "homepage": "https://www.prun.net/"
+    },
+    {
+     "name": "Radio KRŠ",
+     "url": "https://stream.radiokrs.me:8443/lq.mp3",
+     "homepage": "https://radiokrs.com/"
+    },
+    {
+     "name": "Subcity Radio",
+     "url": "https://stream.subcity.org/listen",
+     "homepage": "https://subcity.org/"
+    },
+    {
+     "name": "UCT Radio",
+     "url": "https://edge.iono.fm/xice/uctradio_live_high.aac",
+     "homepage": "https://www.uct.ac.za/radio"
+    },
+    {
+     "name": "WFMU - Rock 'n' Soul",
+     "url": "http://wfmu.org/wfmu_rock.pls",
+     "homepage": "https://wfmu.org/"
+    },
+    {
+     "name": "WFMU - Sheena's Jungle Room",
+     "url": "http://stream0.wfmu.org/sheena",
+     "homepage": "https://wfmu.org/"
+    },
+    {
+     "name": "WFMU 91.1",
+     "url": "https://wfmu.org/wfmu.pls",
+     "homepage": "https://wfmu.org"
+    },
+    {
+     "name": "WMSE 91.7",
+     "url": "https://wmse.streamguys1.com/wmselivemp3",
+     "homepage": "https://wmse.org/"
+    },
+    {
+     "name": "WNCW 88.7",
+     "url": "https://wncw-live-a.edge.audiocdn.com/6286_56k.aac",
+     "homepage": "https://www.wncw.org/"
+    },
+    {
+     "name": "WRIR 97.3",
+     "url": "https://live.wrir.org/",
+     "homepage": "https://wrir.org"
+    },
+    {
+     "name": "WSUM 91.7",
+     "url": "https://ice23.securenetsystems.net/WSUMFM",
+     "homepage": "https://wsum.org/"
+    },
+    {
+     "name": "WTJU 91.1",
+     "url": "https://streams.wtju.net/wtju-live.mp3",
+     "homepage": "https://wtju.net"
+    },
+    {
+     "name": "WXYC 89.3",
+     "url": "https://audio-mp3.ibiblio.org/wxyc.mp3",
+     "homepage": "https://wxyc.org/"
+    },
+    {
+     "name": "WZRD 88.3",
+     "url": "https://wzrd.streamguys1.com/live",
+     "homepage": "https://wzrdchicago.org/"
+    }
+   ]
+  },
+  {
+   "id": "global-independent-online-communities",
+   "name": "Global Independent & Online Communities",
+   "nameZh": "全球独立与网络社区",
+   "order": 3,
+   "stations": [
+    {
+     "name": "20ft Radio",
+     "url": "https://20ft-radio.radiocult.fm/stream",
+     "homepage": "https://www.20ftradio.net/"
+    },
+    {
+     "name": "313.FM",
+     "url": "http://icecast.ofdoom.com:8000/burst.mp3",
+     "homepage": "https://www.313.fm/"
+    },
+    {
+     "name": "8 Ball Radio",
+     "url": "https://eightball.out.airtime.pro/eightball_a",
+     "homepage": "https://8ballradio.nyc"
+    },
+    {
+     "name": "8Radio.com",
+     "url": "https://edge4.audioxi.com/8RADIO",
+     "homepage": "https://8radio.com/"
+    },
+    {
+     "name": "Aaja Music - Channel 1",
+     "url": "https://aaja.radiocult.fm/stream",
+     "homepage": "https://aajamusic.com/",
+     "label": "Channel 1"
+    },
+    {
+     "name": "Aaja Music - Channel 2",
+     "url": "https://aaja-2.radiocult.fm/stream",
+     "homepage": "https://aajamusic.com/",
+     "label": "Channel 2"
+    },
+    {
+     "name": "Amplitudes Radio",
+     "url": "https://listen.radioking.com/radio/591304/stream/654688",
+     "homepage": "https://amplitudesradio.com/"
+    },
+    {
+     "name": "Bangkok Community Radio (BCR)",
+     "url": "https://bcr.radiocult.fm/stream",
+     "homepage": "https://www.bangkokcommunityradio.com/"
+    },
+    {
+     "name": "Behind Loud Tracks",
+     "url": "https://play.radioking.io/blt-radio",
+     "homepage": "https://blt-radio.com/"
+    },
+    {
+     "name": "Black Rhino Radio",
+     "url": "https://blackrhinoradio.out.airtime.pro/blackrhinoradio_a",
+     "homepage": "https://blackrhinoradio.com/"
+    },
+    {
+     "name": "Cashmere Radio",
+     "url": "https://cashmereradio.out.airtime.pro/cashmereradio_a",
+     "homepage": "https://cashmereradio.com"
+    },
+    {
+     "name": "Clyde Built Radio",
+     "url": "https://clydebuiltradio.out.airtime.pro/clydebuiltradio_a",
+     "homepage": "https://www.clydebuiltradio.com/"
+    },
+    {
+     "name": "Dandelion Radio",
+     "url": "https://www.dandelionradio.com/DandelionRadio.pls",
+     "homepage": "https://dandelionradio.com/"
+    },
+    {
+     "name": "Datafruits",
+     "url": "https://streampusher-relay.club/datafruits.mp3",
+     "homepage": "https://datafruits.fm/"
+    },
+    {
+     "name": "Depa Radio",
+     "url": "https://servidor15-2.brlogic.com:7006/live",
+     "homepage": "https://www.depa.radio/"
+    },
+    {
+     "name": "DIA!",
+     "url": "https://livestream.diaradio.live/main",
+     "homepage": "https://www.diaradio.live/"
+    },
+    {
+     "name": "Dial Radio",
+     "url": "https://cast.dialradio.live/stream.aac",
+     "homepage": "https://dialradio.live/"
+    },
+    {
+     "name": "Do!! You!!! Radio",
+     "url": "https://doyouworld.out.airtime.pro/doyouworld_a",
+     "homepage": "https://doyou.world/"
+    },
+    {
+     "name": "dublab",
+     "url": "http://dublab.out.airtime.pro:8000/dublab_a",
+     "homepage": "https://dublab.com"
+    },
+    {
+     "name": "Dublin Digital Radio",
+     "url": "https://dublin-digital-radio.radiocult.fm/stream",
+     "homepage": "https://listen.dublindigitalradio.com/"
+    },
+    {
+     "name": "The Dump",
+     "url": "https://radio.turbo.net.au/stream-hq",
+     "homepage": "https://www.thedumpradio.com/"
+    },
+    {
+     "name": "East Village Radio",
+     "url": "https://east-village-radio.radiocult.fm/stream",
+     "homepage": "https://eastvillageradio.com/"
+    },
+    {
+     "name": "Fango Radio",
+     "url": "https://pantano.ovh:8444/pantano",
+     "homepage": "https://www.fangoradio.com/"
+    },
+    {
+     "name": "fbi.radio",
+     "url": "https://streamer.fbiradio.com/stream",
+     "homepage": "https://www.fbi.radio/"
+    },
+    {
+     "name": "Foundation FM",
+     "url": "https://streamer.radio.co/s0628bdd53/listen",
+     "homepage": "https://foundation.fm/"
+    },
+    {
+     "name": "Fritto FM",
+     "url": "https://frittofm2020.out.airtime.pro/frittofm2020_a",
+     "homepage": "https://fritto.fm/"
+    },
+    {
+     "name": "Gatekeeper Radio",
+     "url": "https://azuracast.gatekeeperradio.com/listen/gatekeeper_radio/radio.mp3",
+     "homepage": "https://gatekeeperradio.com/"
+    },
+    {
+     "name": "Great Circles",
+     "url": "https://audio-edge-ey5nr.ams.s.radiomast.io/799da8fd-389e-4923-9068-77c725c6e82f",
+     "homepage": "https://greatcircles.net/"
+    },
+    {
+     "name": "HKCR",
+     "url": "https://stream-test.hkcr.live/hls/main.m3u8",
+     "homepage": "https://hkcr.live/"
+    },
+    {
+     "name": "Hollow Earth Radio",
+     "url": "http://centova.rockhost.com:8001/stream",
+     "homepage": "https://khuh.fm/"
+    },
+    {
+     "name": "IDA",
+     "url": "https://broadcast.idaidaida.net:8000/stream",
+     "homepage": "https://www.idaidaida.net/"
+    },
+    {
+     "name": "Internet Public Radio",
+     "url": "https://stream-relay-geo.internetpublicradio.live/stream/main",
+     "homepage": "https://www.internetpublicradio.live/"
+    },
+    {
+     "name": "KCHUNG Radio",
+     "url": "https://kchung-radio-01e54a81.radiocult.fm/stream",
+     "homepage": "https://www.kchungradio.org/"
+    },
+    {
+     "name": "Kindred",
+     "url": "https://kindred.radiocult.fm/stream",
+     "homepage": "https://kindredeverything.com/"
+    },
+    {
+     "name": "Kiosk Radio",
+     "url": "https://kioskradiobxl.out.airtime.pro/kioskradiobxl_b",
+     "homepage": "https://kioskradio.com/"
+    },
+    {
+     "name": "KPISS",
+     "url": "https://das-edge14-live365-dal02.cdnstream.com/a18444",
+     "homepage": "https://kpiss.fm/"
+    },
+    {
+     "name": "KWSX Radio",
+     "url": "https://stream.kwsx.online/listen/kwsx/radio-med.mp3",
+     "homepage": "https://radio.kwsx.online/"
+    },
+    {
+     "name": "Lahmacun Radio",
+     "url": "https://streaming.lahmacun.hu/radio/8000/radio.mp3",
+     "homepage": "https://www.lahmacun.hu/"
+    },
+    {
+     "name": "The Lake Radio",
+     "url": "http://hyades.shoutca.st:8627/stream",
+     "homepage": "https://thelakeradio.com"
+    },
+    {
+     "name": "Le Grigri",
+     "url": "https://www.radioking.com/play/legrigri/273715",
+     "homepage": "https://www.le-grigri.com/"
+    },
+    {
+     "name": "Le Mellotron",
+     "url": "https://listen.radioking.com/radio/477719/stream/534044",
+     "homepage": "https://lemellotron.com"
+    },
+    {
+     "name": "Loose Antenna",
+     "url": "https://stream.looseantenna.fm/radio/8000/default.mp3",
+     "homepage": "https://looseantenna.fm/"
+    },
+    {
+     "name": "Loose FM",
+     "url": "https://loosefm.radiocult.fm/stream",
+     "homepage": "https://loose.fm/"
+    },
+    {
+     "name": "The Lot Radio",
+     "url": "https://livepeercdn.studio/hls/85c28sa2o8wppm58/index.m3u8",
+     "homepage": "https://www.thelotradio.com"
+    },
+    {
+     "name": "LYL Radio",
+     "url": "https://icecast.lyl.live/live",
+     "homepage": "https://lyl.live/"
+    },
+    {
+     "name": "Mondo Bongo Radio",
+     "url": "https://cast.mndbng.com/hls/mondobongo/aac_hifi.m3u8",
+     "homepage": "https://mondobongoradio.com"
+    },
+    {
+     "name": "Montez Press Radio",
+     "url": "https://stream.montezpress.com/icecast/music",
+     "homepage": "https://radio.montezpress.com/"
+    },
+    {
+     "name": "Mouthfull",
+     "url": "https://mouthfull-radio.radiocult.fm/stream",
+     "homepage": "https://mouthfull.live/"
+    },
+    {
+     "name": "Muito Radio",
+     "url": "https://muitoradio.out.airtime.pro/muitoradio_a",
+     "homepage": "https://www.muitoradio.com/"
+    },
+    {
+     "name": "Mutant Radio",
+     "url": "https://listen.radioking.com/radio/282820/stream/328621",
+     "homepage": "https://www.mutantradio.net"
+    },
+    {
+     "name": "n10.as",
+     "url": "https://n10as.radiocult.fm/stream",
+     "homepage": "https://n10.as/"
+    },
+    {
+     "name": "Nebulah Radio",
+     "url": "https://listen.radioking.com/radio/314507/stream/361754",
+     "homepage": "https://www.nebulah-radio.com/"
+    },
+    {
+     "name": "Ness Radio",
+     "url": "https://radio.nessradio.net:8212/nessradio-hd",
+     "homepage": "https://nessradio.com/"
+    },
+    {
+     "name": "Netil Radio",
+     "url": "https://netilradio.out.airtime.pro/netilradio_a",
+     "homepage": "https://netilradio.com/"
+    },
+    {
+     "name": "NEU Radio",
+     "url": "https://radio.eduneu.eu:8020/radio.mp3",
+     "homepage": "https://www.neuradio.it/"
+    },
+    {
+     "name": "Newtown Radio",
+     "url": "https://streaming.radio.co/s0d090ee43/listen",
+     "homepage": "https://newtownradio.com/"
+    },
+    {
+     "name": "Noods Radio",
+     "url": "https://noods-radio.radiocult.fm/stream",
+     "homepage": "https://noodsradio.com/"
+    },
+    {
+     "name": "Norrm",
+     "url": "https://listen.norrm.com/default",
+     "homepage": "https://www.norrm.com/"
+    },
+    {
+     "name": "NTS - 1",
+     "url": "http://stream-relay-geo.ntslive.net/stream",
+     "homepage": "https://www.nts.live/",
+     "label": "1"
+    },
+    {
+     "name": "NTS - 2",
+     "url": "http://stream-relay-geo.ntslive.net/stream2",
+     "homepage": "https://www.nts.live/",
+     "label": "2"
+    },
+    {
+     "name": "Ola Radio",
+     "url": "https://ola-radio.radiocult.fm/stream",
+     "homepage": "https://www.olaradio.fr/"
+    },
+    {
+     "name": "Operator Radio",
+     "url": "https://origin.streamnerd.nl/operator/operator/icecast.audio",
+     "homepage": "https://operator-radio.com/"
+    },
+    {
+     "name": "Palanga Street Radio",
+     "url": "https://stream.palanga.live:8443/palanga128.mp3",
+     "homepage": "https://palanga.live/"
+    },
+    {
+     "name": "Paranoise Radio",
+     "url": "https://paranoisewebcast.radioca.st/stream",
+     "homepage": "https://www.paranoiseradio.com/"
+    },
+    {
+     "name": "Parea Radio",
+     "url": "https://parea-radio-b7474105.radiocult.fm/stream",
+     "homepage": "https://parearadio.com/"
+    },
+    {
+     "name": "Piñata Radio",
+     "url": "https://listen.radioking.com/radio/96031/stream/134656",
+     "homepage": "https://www.pinataradio.com/"
+    },
+    {
+     "name": "Radio 80000",
+     "url": "https://radio80k.out.airtime.pro/radio80k_a",
+     "homepage": "https://www.radio80k.de/"
+    },
+    {
+     "name": "Radio Banda Larga",
+     "url": "https://rblmedia-a4a44e62.radiocult.fm/stream",
+     "homepage": "https://rbl.media/"
+    },
+    {
+     "name": "Radio Buena Vida",
+     "url": "https://s4.radio.co/s69b281ac0/listen",
+     "homepage": "https://buenavida.co.uk/"
+    },
+    {
+     "name": "Radio Centraal",
+     "url": "http://streams.movemedia.eu:8530/",
+     "homepage": "https://www.radiocentraal.be/"
+    },
+    {
+     "name": "Radio Dopo",
+     "url": "https://streaming.radio.co/s807721f02/listen",
+     "homepage": "https://radiodopo.it/"
+    },
+    {
+     "name": "Radio Kapitał",
+     "url": "https://radiokapitalpl.out.airtime.pro/radiokapitalpl_a",
+     "homepage": "https://radiokapital.pl/"
+    },
+    {
+     "name": "Radio Meuh",
+     "url": "http://radiomeuh.ice.infomaniak.ch/radiomeuh-128.mp3",
+     "homepage": "https://www.radiomeuh.com/"
+    },
+    {
+     "name": "Radio Nopal",
+     "url": "https://radio.mensajito.mx/nopalA",
+     "homepage": "https://radionopal.com/"
+    },
+    {
+     "name": "Radio Nova",
+     "url": "https://novazz.ice.infomaniak.ch/novazz-128.mp3",
+     "homepage": "https://www.nova.fr/radios/radio-nova/"
+    },
+    {
+     "name": "Radio Pinpon",
+     "url": "https://listen.radioking.com/radio/142627/stream/182797",
+     "homepage": "https://www.facebook.com/radiopinpon/"
+    },
+    {
+     "name": "Radio Quantica",
+     "url": "https://libretime.radioquantica.com/main.mp3",
+     "homepage": "https://www.radioquantica.com/"
+    },
+    {
+     "name": "Radio Raheem",
+     "url": "https://radioraheem.out.airtime.pro/radioraheem_a",
+     "homepage": "https://radioraheem.it/"
+    },
+    {
+     "name": "Radio Relativa",
+     "url": "https://streamer.radio.co/sd6131729c/listen",
+     "homepage": "https://radiorelativa.eu/"
+    },
+    {
+     "name": "Radio Reverb 97.2",
+     "url": "http://edge-audio-03-gos2.sharp-stream.com/radioreverb.mp3",
+     "homepage": "https://radioreverb.com"
+    },
+    {
+     "name": "Radio Sam Sam",
+     "url": "https://listen.radioking.com/radio/742276/stream/808768",
+     "homepage": "https://samsam.world/"
+    },
+    {
+     "name": "Radio Santana Breda",
+     "url": "https://server7.radio-streams.net/proxy/santana/stream",
+     "homepage": "https://radiosantana.blogspot.com/?m=0"
+    },
+    {
+     "name": "Radio Sofa",
+     "url": "https://radio.radio-sofa.com/listen/radio_sofa/radio.mp3",
+     "homepage": "https://www.radio-sofa.com/"
+    },
+    {
+     "name": "Radio Tsonami",
+     "url": "https://radio-tsonami-b24c40dc.radiocult.fm/stream",
+     "homepage": "https://radiotsonami.org/"
+    },
+    {
+     "name": "Radio Vilnius",
+     "url": "https://transliacija.audiomastering.lt/radiovilnius-mp3",
+     "homepage": "https://radiovilnius.live/"
+    },
+    {
+     "name": "Reform Radio",
+     "url": "https://testform.out.airtime.pro/testform_a",
+     "homepage": "https://www.reformradio.co.uk/"
+    },
+    {
+     "name": "Refuge Worldwide",
+     "url": "https://streaming.radio.co/s3699c5e49/listen",
+     "homepage": "https://refugeworldwide.com/"
+    },
+    {
+     "name": "Resonance 104.4 FM",
+     "url": "http://stream.resonance.fm:8000/resonance",
+     "homepage": "https://www.resonancefm.com/"
+    },
+    {
+     "name": "Retreat Radio",
+     "url": "https://retreatradio.out.airtime.pro/retreatradio_b",
+     "homepage": "https://www.retreatradio.net/"
+    },
+    {
+     "name": "Rinse FM",
+     "url": "https://admin.stream.rinse.fm/proxy/rinse_uk/stream",
+     "homepage": "https://www.rinse.fm/channels/uk"
+    },
+    {
+     "name": "ROVR",
+     "url": "https://hls-prod.rovr.live/prod/stream_plus02/llhls.m3u8",
+     "homepage": "https://www.rovr.live/"
+    },
+    {
+     "name": "Rukh Radio",
+     "url": "https://a1.asurahosting.com/listen/rukh/radio.mp3",
+     "homepage": "https://rukh.live/"
+    },
+    {
+     "name": "Rytmabad Radio",
+     "url": "https://radio.filmtastic.uz/listen/rytmabad/radio.mp3",
+     "homepage": "https://rytmabad.com/"
+    },
+    {
+     "name": "Sauna Radio",
+     "url": "https://stream.saunaradio.com/live",
+     "homepage": "https://www.saunaradio.com/"
+    },
+    {
+     "name": "Seyðisfjörður Community Radio",
+     "url": "https://seyisfjorur-community-radio.radiocult.fm/stream",
+     "homepage": "https://www.seydisfjordurcommunityradio.net/"
+    },
+    {
+     "name": "Slack Radio",
+     "url": "https://slackradiolive.com/listen/slack_radio/radio.mp3",
+     "homepage": "https://www.slackradio.org/"
+    },
+    {
+     "name": "Soho Radio",
+     "url": "https://sohoradiomusic.doughunt.co.uk:8010/320mp3",
+     "homepage": "https://sohoradio.com/"
+    },
+    {
+     "name": "Station Station",
+     "url": "https://libretime.stationstation.fr/main",
+     "homepage": "https://stationstation.fr/"
+    },
+    {
+     "name": "stayfm",
+     "url": "https://stayfm.com:8443/archive",
+     "homepage": "https://stayfm.com/"
+    },
+    {
+     "name": "STEGI.RADIO",
+     "url": "https://movementathens.out.airtime.pro/movementathens_a",
+     "homepage": "https://stegi.radio/"
+    },
+    {
+     "name": "Studio Néau",
+     "url": "https://studioneau.out.airtime.pro/studioneau_a",
+     "homepage": "https://www.studioneau.be/"
+    },
+    {
+     "name": "Subtle Radio",
+     "url": "https://subtle-radio-dd2656d9.radiocult.fm/stream",
+     "homepage": "https://www.subtleradio.com/"
+    },
+    {
+     "name": "THF Radio",
+     "url": "https://thf-radio-7ec0e6ee.radiocult.fm/stream",
+     "homepage": "https://www.thfradio.de/"
+    },
+    {
+     "name": "Three D Radio 93.7 FM",
+     "url": "https://sounds.threedradio.com/stream",
+     "homepage": "https://www.threedradio.com/"
+    },
+    {
+     "name": "Tīrkultūra",
+     "url": "https://s3.radio.co/s216811754/listen",
+     "homepage": "https://www.tirkultura.lv/"
+    },
+    {
+     "name": "TSUBAKI fm",
+     "url": "https://edge.mixlr.com/channel/vgmet",
+     "homepage": "https://tsubakifm.com/"
+    },
+    {
+     "name": "Veneno",
+     "url": "https://radio.veneno.live/stream/main",
+     "homepage": "https://veneno.live/"
+    },
+    {
+     "name": "We Are Various",
+     "url": "https://azuracast.wearevarious.com/listen/we_are_various/live.mp3",
+     "homepage": "https://www.wearevarious.com/"
+    },
+    {
+     "name": "WGXC 90.7-FM",
+     "url": "https://audio.wavefarm.org/wgxc.mp3",
+     "homepage": "https://wavefarm.org/radio/wgxc/schedule"
+    },
+    {
+     "name": "Worldwide FM",
+     "url": "https://worldwide-fm.radiocult.fm/stream",
+     "homepage": "https://www.worldwidefm.net/"
+    },
+    {
+     "name": "XRAY.fm",
+     "url": "https://listen.xray.fm/stream",
+     "homepage": "https://xray.fm/"
+    },
+    {
+     "name": "Zabrij Radio",
+     "url": "https://zabrij-radio.radiocult.fm/stream",
+     "homepage": "https://www.zabrijradio.org/"
+    }
+   ]
+  },
+  {
+   "id": "decades-oldies-nostalgia",
+   "name": "Decades, Oldies & Nostalgia",
+   "nameZh": "年代金曲 · 怀旧",
+   "order": 4,
+   "stations": [
+    {
+     "name": "Beatles Radio",
+     "url": "http://stream.zeno.fm/e4auhdgm6cquv",
+     "homepage": "https://you.radio/station/exclusiveradio-beatles"
+    },
+    {
+     "name": "Flower Power Radio",
+     "url": "http://uk1.streamingpulse.com:7000/,",
+     "homepage": "https://www.flowerpowerradio.com/"
+    },
+    {
+     "name": "J-Club Bandstand",
+     "url": "https://cast1.torontocast.com:2060/stream",
+     "homepage": "https://jclubbandstand.torontocast.stream/stations/index.html"
+    },
+    {
+     "name": "LuxuriaMusic",
+     "url": "http://ice10.securenetsystems.net/LUXOMP3",
+     "homepage": "https://luxuriamusic.com"
+    },
+    {
+     "name": "Mad Music Radio - Oldies Radio",
+     "url": "http://janus.shoutca.st:8259/,",
+     "homepage": "https://wgdr.rocks/"
+    },
+    {
+     "name": "Majestic Jukebox",
+     "url": "https://uk3.internet-radio.com/proxy/majesticjukebox/live",
+     "homepage": "https://www.majesticjukeboxradio.com"
+    },
+    {
+     "name": "Old Time Radio",
+     "url": "https://kea.cdnstream.com/1893_128",
+     "homepage": "https://oldtime.radio/"
+    },
+    {
+     "name": "Psychedelicized",
+     "url": "https://stream.psychedelicized.com/listen/psychedelicized/radio.mp3",
+     "homepage": "https://psychedelicized.com/"
+    },
+    {
+     "name": "Pumpkin FM - 1940s",
+     "url": "https://cast2.asurahosting.com/proxy/1940sradio/stream",
+     "homepage": "https://pumpkinfm.com/"
+    },
+    {
+     "name": "The Quiet Village",
+     "url": "http://broadcast.shoutcheap.com:8424/stream",
+     "homepage": "https://www.digitiki.com/radio.html"
+    },
+    {
+     "name": "Radio Caroline",
+     "url": "http://78.129.202.200:8040/,",
+     "homepage": "https://radiocaroline.co.uk"
+    },
+    {
+     "name": "Radio Dismuke",
+     "url": "http://stream2.early1900s.org:8000/,",
+     "homepage": "http://dismuke.org"
+    },
+    {
+     "name": "The Retro Attic",
+     "url": "http://103.226.246.212:8159/stream",
+     "homepage": "https://www.retroatticrareoldiesradio.com/"
+    },
+    {
+     "name": "SMRN5001",
+     "url": "https://cast1.sql2.smrn.com/5001",
+     "homepage": "https://smrn5001.com/"
+    },
+    {
+     "name": "Technicolor Web of Sound",
+     "url": "http://streaming.live365.com/a01650",
+     "homepage": "https://www.techwebsound.com/"
+    },
+    {
+     "name": "Ultimate Oldies Radio",
+     "url": "https://puma.streemlion.com:1785/stream",
+     "homepage": "https://ultimateoldiesradio.com"
+    },
+    {
+     "name": "Van Morrison Radio",
+     "url": "https://streaming.exclusive.radio/er/vanmorrison/icecast.audio",
+     "homepage": "https://you.radio/station/exclusiveradio-van-morrison"
+    },
+    {
+     "name": "Vintage Obscura Radio",
+     "url": "https://radio.vintageobscura.net/stream",
+     "homepage": "https://vintageobscura.net/"
+    },
+    {
+     "name": "WALM - Classic Vinyl",
+     "url": "https://icecast.walmradio.com:8443/classic",
+     "homepage": "https://walmradio.com/classic/"
+    },
+    {
+     "name": "WALM - Old Time Radio",
+     "url": "https://icecast.walmradio.com:8443/otr",
+     "homepage": "https://walmradio.com/otr"
+    },
+    {
+     "name": "Wayback Radio",
+     "url": "https://s5.citrus3.com:8244/stream",
+     "homepage": "https://www.waybackradio.org/"
+    }
+   ]
+  },
+  {
+   "id": "electronic",
+   "name": "Electronic",
+   "nameZh": "电子",
+   "order": 5,
+   "stations": [
+    {
+     "name": "54house.fm",
+     "url": "https://54house.fm:9013/stream",
+     "homepage": "https://www.54house.fm/"
+    },
+    {
+     "name": "After Hours FM",
+     "url": "http://fr.ah.fm:8000/,",
+     "homepage": "https://ah.fm"
+    },
+    {
+     "name": "Bad Radio",
+     "url": "http://server.badradio.biz:8000/stream",
+     "homepage": "https://badradio.nz/"
+    },
+    {
+     "name": "Bassdrive",
+     "url": "https://www.bassdrive.com/bassdrive.m3u",
+     "homepage": "https://www.bassdrive.com"
+    },
+    {
+     "name": "Blue Marlin Ibiza",
+     "url": "https://ibizasonica.streaming-pro.com:8001/bluemarlin",
+     "homepage": "http://www.bluemarlinibiza.com/radio/live"
+    },
+    {
+     "name": "Bondi Radio",
+     "url": "https://streaming.radio.co/sfd68ddd77/listen",
+     "homepage": "https://bondiradio.com.au/"
+    },
+    {
+     "name": "Deeper Shades of House",
+     "url": "https://andromeda.housejunkie.ca/radio/8000/radio.mp3",
+     "homepage": "https://radio.deepershades.net"
+    },
+    {
+     "name": "Deepvibes Radio",
+     "url": "http://88.208.218.19:9106/stream",
+     "homepage": "http://www.deepvibes.co.uk/"
+    },
+    {
+     "name": "Dogglounge",
+     "url": "http://dogglounge.com:8000/,",
+     "homepage": "https://dogglounge.com/"
+    },
+    {
+     "name": "Dub Ninja",
+     "url": "https://dub.ninja/live",
+     "homepage": "https://dub.ninja/"
+    },
+    {
+     "name": "EBM Radio",
+     "url": "http://www.ebm-radio.org:7000/hq",
+     "homepage": "https://www.ebm-radio.de/index.php"
+    },
+    {
+     "name": "Eurodance Radio",
+     "url": "http://daydeeeurodance.stream.laut.fm/daydeeeurodance",
+     "homepage": "https://www.eurodance-radio.com/"
+    },
+    {
+     "name": "Freak Beats Tekno Radio",
+     "url": "http://fr1.nexuscast.com:8042/;stream.mp3",
+     "homepage": "https://freakbeats.nexuscast.com"
+    },
+    {
+     "name": "Frisky Radio",
+     "url": "http://stream2.friskyradio.com/frisky_mp3_hi",
+     "homepage": "https://frisky.fm/"
+    },
+    {
+     "name": "GROOVE RADIO",
+     "url": "https://streams.radio.co/s14193ab17/listen",
+     "homepage": "https://www.grooveradio.com/"
+    },
+    {
+     "name": "Intergalactic FM - Cybernetic Broadcasting System",
+     "url": "http://radio.intergalactic.fm:80/1",
+     "homepage": "https://intergalactic.fm/"
+    },
+    {
+     "name": "ISEKOI Radio - Main Channel",
+     "url": "https://public.isekoi-radio.com/listen/isekoi/radio.mp3",
+     "homepage": "https://isekoi-radio.com/"
+    },
+    {
+     "name": "Intergalactic FM - Disco Fetish",
+     "url": "https://radio.intergalactic.fm/2A",
+     "homepage": "https://intergalactic.fm/"
+    },
+    {
+     "name": "Italoradio.fm",
+     "url": "http://cc6.beheerstream.com:8102/stream",
+     "homepage": "https://italoradio.fm/"
+    },
+    {
+     "name": "Kool FM",
+     "url": "https://admin.stream.rinse.fm/proxy/kool/stream",
+     "homepage": "https://www.rinse.fm/channels/kool"
+    },
+    {
+     "name": "KSOL - From the Valleys of Kasol",
+     "url": "https://ksol.live/hls/from_the_valleys_of_kasol/aac_hifi.m3u8",
+     "homepage": "https://ksol.live/valleys-of-kasol"
+    },
+    {
+     "name": "KSOL - Suno Toh Sahi",
+     "url": "https://ksol.live/hls/suno_toh_sahi/aac_hifi.m3u8",
+     "homepage": "https://ksol.live/suno-toh-sahi"
+    },
+    {
+     "name": "Limbik Frequencies",
+     "url": "https://limbikfreq.com/listen/limbik_frequencies/320.mp3",
+     "homepage": "https://limbikfreq.com/public/limbik_frequencies"
+    },
+    {
+     "name": "Minimal Mix Radio",
+     "url": "http://orion.shoutca.st:8750/stream",
+     "homepage": "https://minimalmix.com/"
+    },
+    {
+     "name": "Modular Station",
+     "url": "https://broadcast.modular-station.com/listen/modular_station/radio.aac",
+     "homepage": "https://modular-station.com/"
+    },
+    {
+     "name": "Nightride FM",
+     "url": "https://stream.nightride.fm/nightride.mp3",
+     "homepage": "https://nightride.fm/"
+    },
+    {
+     "name": "Nightwave Plaza",
+     "url": "https://radio.plaza.one/ogg",
+     "homepage": "https://plaza.one/"
+    },
+    {
+     "name": "NTS - 4 To The Floor",
+     "url": "https://stream-mixtape-geo.ntslive.net/mixtape5",
+     "homepage": "https://www.nts.live/infinite-mixtapes/4-to-the-floor"
+    },
+    {
+     "name": "NTS - Labyrinth",
+     "url": "https://stream-mixtape-geo.ntslive.net/mixtape31",
+     "homepage": "https://www.nts.live/infinite-mixtapes/labyrinth"
+    },
+    {
+     "name": "NTS - Poolside",
+     "url": "https://stream-mixtape-geo.ntslive.net/mixtape4",
+     "homepage": "https://www.nts.live/infinite-mixtapes/poolside"
+    },
+    {
+     "name": "NTS - Sweat",
+     "url": "https://stream-mixtape-geo.ntslive.net/mixtape24",
+     "homepage": "https://www.nts.live/infinite-mixtapes/sweat"
+    },
+    {
+     "name": "Old Skool Rave Tapes",
+     "url": "https://azuracast.oldskoolravetapes.co.uk/listen/old_skool_rave_tapes/listen",
+     "homepage": "https://oldskoolravetapes.co.uk/"
+    },
+    {
+     "name": "OpenLab FM",
+     "url": "https://ice09.fluidstream.net/openlab.aac",
+     "homepage": "https://openlab.fm"
+    },
+    {
+     "name": "Poolsuite FM",
+     "url": "https://s5.radio.co/sc9cb59935/listen",
+     "homepage": "https://poolsuite.net/"
+    },
+    {
+     "name": "Radio BipTunia",
+     "url": "https://ecast.myautodj.com:1380/listen.mp3",
+     "homepage": "https://biptunia.com/"
+    },
+    {
+     "name": "Radio DY10",
+     "url": "https://flux.radiody10.com/live",
+     "homepage": "https://www.radiody10.com/"
+    },
+    {
+     "name": "Radio Isla Negra - Upbeat",
+     "url": "https://radioislanegra.org/listen/up/stream",
+     "homepage": "https://www.radioislanegra.com/"
+    },
+    {
+     "name": "Radio ItaloPower!",
+     "url": "https://stream.deevaradio.net:10443/italopower",
+     "homepage": "https://italopower.com"
+    },
+    {
+     "name": "Rekt Network",
+     "url": "https://stream.rekt.network/hls/rekt/aac_hifi.m3u8",
+     "homepage": "https://rekt.network/"
+    },
+    {
+     "name": "Sanctuary Radio",
+     "url": "https://stream.sanctuaryradio.com/mainchannel_hq",
+     "homepage": "https://www.sanctuaryradio.com/"
+    },
+    {
+     "name": "SerrebiRadio",
+     "url": "https://radio.serrebiradio.com/listen/serrebiradio/SerrebiRadio",
+     "homepage": "https://serrebiradio.com"
+    },
+    {
+     "name": "Skylab Radio",
+     "url": "http://stream.skylab-radio.com:8000/live",
+     "homepage": "https://skylabradio.com"
+    },
+    {
+     "name": "Sub.FM",
+     "url": "http://subfm.radioca.st/Sub.FM",
+     "homepage": "https://www.sub.fm/"
+    },
+    {
+     "name": "Synthetic FM",
+     "url": "https://mediaserv38.live-streams.nl:18040/live",
+     "homepage": "https://syntheticfm.com/about"
+    },
+    {
+     "name": "Synthetic FM - New Italo Generation",
+     "url": "https://mediaserv38.live-streams.nl:18030/stream",
+     "homepage": "https://syntheticfm.com/about"
+    },
+    {
+     "name": "Systrum Sistum - SSR2",
+     "url": "https://systrum.net/SSR2",
+     "homepage": "https://systrum.net/"
+    },
+    {
+     "name": "TEKnival Radio",
+     "url": "https://listen.teknivalradio.com/listen/teknivalradio/radio.mp3",
+     "homepage": "https://teknivalradio.com/"
+    },
+    {
+     "name": "TM Radio",
+     "url": "https://stream.tm-radio.com/tribalmixes",
+     "homepage": "https://tm-radio.com/"
+    }
+   ]
+  },
+  {
+   "id": "funk-soul-hip-hop-disco",
+   "name": "Funk, Soul, Hip-Hop & Disco",
+   "nameZh": "放克 · 灵魂 · 嘻哈",
+   "order": 6,
+   "stations": [
+    {
+     "name": "Comala Radio",
+     "url": "https://listen.radioking.com/radio/38120/stream/74519",
+     "homepage": "https://www.comalaradio.com/"
+    },
+    {
+     "name": "dinamo.fm - DiSCOTHEQUE",
+     "url": "http://channels.dinamo.fm/discotheque-mp3",
+     "homepage": "https://dinamo.fm/content/4/channels"
+    },
+    {
+     "name": "Disco Factory FM",
+     "url": "https://s5.radio.co/s253044a7a/listen",
+     "homepage": "https://www.discofactory.fm"
+    },
+    {
+     "name": "The Face Radio",
+     "url": "https://the-face-radio.radiocult.fm/stream",
+     "homepage": "https://thefaceradio.com/"
+    },
+    {
+     "name": "Funk the Planet",
+     "url": "https://streaming.live365.com/a01484",
+     "homepage": "https://funkthepla.net/"
+    },
+    {
+     "name": "Funky Ass Tunes",
+     "url": "https://ams1.reliastream.com/proxy/john12/stream",
+     "homepage": "https://www.funkyasstunes.com/"
+    },
+    {
+     "name": "The Funky Channel",
+     "url": "http://cast3.my-control-panel.com:8170/stream",
+     "homepage": "https://thefunkychannel.com/"
+    },
+    {
+     "name": "Funky Radio",
+     "url": "https://funkyradio.streamingmedia.it/play.mp3",
+     "homepage": "https://funky.radio/"
+    },
+    {
+     "name": "Groove Cabane",
+     "url": "https://listen.radioking.com/radio/314264/stream/361499",
+     "homepage": "https://www.groovecabane.com/"
+    },
+    {
+     "name": "International Rare Groove",
+     "url": "https://s131.radiolize.com/radio/8110/radio.mp3",
+     "homepage": "https://www.irgradio.net/"
+    },
+    {
+     "name": "La Patate Douce",
+     "url": "https://listen.radioking.com/radio/285742/stream/472984",
+     "homepage": "https://www.lapatatedouceradio.com/"
+    },
+    {
+     "name": "Le Bon Mix",
+     "url": "https://stream10.xdevel.com/audio13s976748-2017/stream/icecast.audio",
+     "homepage": "https://www.lebonmix.radio/en/"
+    },
+    {
+     "name": "Mad Radio - Bogotá",
+     "url": "https://c25.radioboss.fm/stream/171",
+     "homepage": "https://madradio.co/"
+    },
+    {
+     "name": "Mojo Radio",
+     "url": "https://stream.laut.fm/mojo",
+     "homepage": "https://www.mojo.de/mojo-radio/"
+    },
+    {
+     "name": "MRG.fm - Planet Hip Hop",
+     "url": "http://listen.mrg.fm:8100/stream",
+     "homepage": "https://www.w.mrg.fm/"
+    },
+    {
+     "name": "Nonstop Casiopea",
+     "url": "https://nonstopcasiopea.radioca.st/;",
+     "homepage": "https://nonstopcasiopea.com/"
+    },
+    {
+     "name": "NTS - Feelings",
+     "url": "https://stream-mixtape-geo.ntslive.net/mixtape27",
+     "homepage": "https://www.nts.live/infinite-mixtapes/feelings"
+    },
+    {
+     "name": "NTS - Low Key",
+     "url": "https://stream-mixtape-geo.ntslive.net/mixtape2",
+     "homepage": "https://www.nts.live/infinite-mixtapes/100-percent-hip-hop"
+    },
+    {
+     "name": "NTS - Rap House",
+     "url": "https://stream-mixtape-geo.ntslive.net/mixtape22",
+     "homepage": "https://www.nts.live/infinite-mixtapes/rap-house"
+    },
+    {
+     "name": "Nuance Radio",
+     "url": "http://admin.nuance.radio/hls/nuance_radio/aac_hifi.m3u8",
+     "homepage": "https://nuance.radio/"
+    },
+    {
+     "name": "Panacea Radio",
+     "url": "https://stream-15.aiir.com/kqwcuxfxcwhtv",
+     "homepage": "https://www.panacearadio.net/"
+    },
+    {
+     "name": "Pool FM",
+     "url": "https://radios.poolwebwork.com.br/8010/stream",
+     "homepage": "https://www.poolfm.com.br/"
+    },
+    {
+     "name": "Radio Bar Sardine",
+     "url": "https://listen.radioking.com/radio/552908/stream/612230",
+     "homepage": "https://radiobarsardine.wixsite.com/radio-bar-sardine"
+    },
+    {
+     "name": "Radio Krimi",
+     "url": "https://radio13.pro-fhi.net/flux-nwsimjda2/stream",
+     "homepage": "http://radiokrimi.com"
+    },
+    {
+     "name": "Radio Nova - Hip-Hop",
+     "url": "https://nova-odn.ice.infomaniak.ch/nova-odn-256.aac",
+     "homepage": "https://www.nova.fr/radios/"
+    },
+    {
+     "name": "Radio Nula - Classic",
+     "url": "https://strm.radionula.com/channel4",
+     "homepage": "https://radionula.com"
+    },
+    {
+     "name": "Sensimedia Hip Hop",
+     "url": "https://sensihiphop.radioca.st/stream",
+     "homepage": "https://sensimedia.net/radio/stations/hiphop"
+    },
+    {
+     "name": "Street Sounds Radio",
+     "url": "https://streaming.broadcastradio.com:10525/streetsd",
+     "homepage": "https://www.streetsoundsradio.com/"
+    },
+    {
+     "name": "Swiss Groove",
+     "url": "https://relay1.swissgroove.ch/;",
+     "homepage": "https://www.swissgroove.ch"
+    },
+    {
+     "name": "Totally Wired Radio",
+     "url": "https://totallywired.out.airtime.pro/totallywired_a",
+     "homepage": "https://totallywiredradio.com"
+    },
+    {
+     "name": "WEFUNK",
+     "url": "http://www.wefunkradio.com/play/radio.pls",
+     "homepage": "https://wefunkradio.com/"
+    },
+    {
+     "name": "WWOZ 90.7",
+     "url": "https://www.wwoz.org/listen/hi",
+     "homepage": "https://www.wwoz.org/"
+    },
+    {
+     "name": "Yumi Co. Radio",
+     "url": "https://yumicoradio.net:8443/stream",
+     "homepage": "https://yumicoradio.net/"
+    }
+   ]
+  },
+  {
+   "id": "jazz-blues",
+   "name": "Jazz & Blues",
+   "nameZh": "爵士 · 布鲁斯",
+   "order": 7,
+   "stations": [
+    {
+     "name": "Aardvark Blues FM",
+     "url": "http://edge4.peta.live365.net/b77280_128mp3",
+     "homepage": "https://aardvarkbluesfm.com/"
+    },
+    {
+     "name": "Ábaco Libros y Café",
+     "url": "http://radio30.virtualtronics.com:8638/,",
+     "homepage": "https://abacolibrosycaferadio.blogspot.com/"
+    },
+    {
+     "name": "AshiyaRadio",
+     "url": "https://s3.radio.co/sc8d895604/listen",
+     "homepage": "https://ashiya.radio/"
+    },
+    {
+     "name": "Concertzender - World of Jazz",
+     "url": "https://streams.greenhost.nl:8006/jazz",
+     "homepage": "https://www.concertzender.nl/en"
+    },
+    {
+     "name": "Fine Music Radio",
+     "url": "http://edge.iono.fm/xhls/fmr_live_medium.m3u8",
+     "homepage": "https://www.fmr.co.za/"
+    },
+    {
+     "name": "FIP Jazz",
+     "url": "http://icecast.radiofrance.fr/fipjazz-hifi.aac",
+     "homepage": "https://www.radiofrance.fr/musique/jazz"
+    },
+    {
+     "name": "Giants of Jazz",
+     "url": "http://streaming.radio.co/s297e618a7/listen",
+     "homepage": "http://www.giantsofjazzradio.co.uk/"
+    },
+    {
+     "name": "Head Wax Radio",
+     "url": "https://headwaxradio.radioca.st/stream",
+     "homepage": "https://www.headwaxradio.ie/"
+    },
+    {
+     "name": "iFusion Radio",
+     "url": "https://listen.radioking.com/radio/523747/stream/582004",
+     "homepage": "https://www.ifusionradio.com/"
+    },
+    {
+     "name": "J-Club Bandstand - Jazz Sakura",
+     "url": "https://kathy.torontocast.com:3330/,",
+     "homepage": "https://jclubbandstand.torontocast.stream/stations/index.html"
+    },
+    {
+     "name": "Jazz Con Class",
+     "url": "http://streaming.live365.com/a73229",
+     "homepage": "https://jazzconclass.com"
+    },
+    {
+     "name": "The Jazz Groove",
+     "url": "http://east-mp3-128.streamthejazzgroove.com/stream",
+     "homepage": "https://jazzgroove.org"
+    },
+    {
+     "name": "The Jazz Groove - Mix 1",
+     "url": "http://west-mp3-128.streamthejazzgroove.com/stream",
+     "homepage": "https://jazzgroove.org/?channel=mix1"
+    },
+    {
+     "name": "Jazz Radio - Afro Jazz",
+     "url": "https://jazz-radio-afro.ice.infomaniak.ch/jazz-radio-afro.mp3",
+     "homepage": "https://www.jazzradio.fr/radio/webradio"
+    },
+    {
+     "name": "Jazz Radio - Blue",
+     "url": "http://jazzblues.ice.infomaniak.ch/jazzblues-high.mp3",
+     "homepage": "https://www.jazzradio.fr/radio/webradio"
+    },
+    {
+     "name": "Jazz24",
+     "url": "https://knkx-live-a.edge.audiocdn.com/6285_256k",
+     "homepage": "https://www.jazz24.org/"
+    },
+    {
+     "name": "KCSM Jazz 91.1",
+     "url": "http://ice7.securenetsystems.net/KCSM2",
+     "homepage": "https://kcsm.org/"
+    },
+    {
+     "name": "KEWU 89.5",
+     "url": "https://streamer.radio.co/s3ba633066/listen",
+     "homepage": "https://www.ewu.edu/kewu/"
+    },
+    {
+     "name": "KJazz 88.1",
+     "url": "https://streaming.live365.com/a49833",
+     "homepage": "https://kkjz.org/"
+    },
+    {
+     "name": "KSDS Jazz 88.3",
+     "url": "https://ksds-ice.streamguys1.com/ksds.mp3",
+     "homepage": "https://www.jazz88.org/"
+    },
+    {
+     "name": "Linn Jazz",
+     "url": "http://radio.linn.co.uk:8000/autodj",
+     "homepage": "https://www.linn.co.uk/linn-radio"
+    },
+    {
+     "name": "NTS - Expansions",
+     "url": "https://stream-mixtape-geo.ntslive.net/mixtape3",
+     "homepage": "https://www.nts.live/infinite-mixtapes/expansions"
+    },
+    {
+     "name": "Octave Radio",
+     "url": "https://octaverecords.out.airtime.pro/octaverecords_a",
+     "homepage": "https://www.psaudio.com/blogs/pauls-posts/octave-radio"
+    },
+    {
+     "name": "The Penthouse",
+     "url": "http://sc1.mystreamserver.com:8052/,",
+     "homepage": "https://thepenthouse.fm/"
+    },
+    {
+     "name": "Radio Suisse Jazz",
+     "url": "https://stream.srg-ssr.ch/m/rsj/aacp_96",
+     "homepage": "https://www.radioswissjazz.ch/en"
+    },
+    {
+     "name": "Shonan Beach FM",
+     "url": "http://shonanbeachfm.out.airtime.pro:8000/shonanbeachfm_a",
+     "homepage": "https://www.beachfm.co.jp/"
+    },
+    {
+     "name": "SomaFM - Sonic Universe",
+     "url": "https://somafm.com/sonicuniverse256.pls",
+     "homepage": "https://somafm.com/sonicuniverse/"
+    },
+    {
+     "name": "TSF Jazz",
+     "url": "http://tsfjazz.ice.infomaniak.ch/tsfjazz-high.mp3",
+     "homepage": "https://www.tsfjazz.com/"
+    },
+    {
+     "name": "WBGO 88.3",
+     "url": "https://ais-sa8.cdnstream1.com/3629_128.mp3",
+     "homepage": "https://www.wbgo.org/"
+    },
+    {
+     "name": "WDNA 88.9",
+     "url": "http://us9.streamingpulse.com:7033/stream",
+     "homepage": "https://wdnaradio.org"
+    },
+    {
+     "name": "WKCR 89.9",
+     "url": "https://wkcr.streamguys1.com:80/live",
+     "homepage": "https://www.cc-seas.columbia.edu/wkcr/"
+    },
+    {
+     "name": "WUCF 89.9",
+     "url": "http://peridot.streamguys.com:7830/WUCF",
+     "homepage": "https://www.wucf.org"
+    },
+    {
+     "name": "WVPE - Blues3",
+     "url": "https://wvpe-live.streamguys1.com/live",
+     "homepage": "https://www.wvpe.org/show/blues-revue"
+    }
+   ]
+  },
+  {
+   "id": "metal-heavy",
+   "name": "Metal & Heavy",
+   "nameZh": "金属 · 重型",
+   "order": 8,
+   "stations": [
+    {
+     "name": "Core Radio",
+     "url": "http://serv.coreradio.online:8000/coreradio",
+     "homepage": "https://coreradio.online/"
+    },
+    {
+     "name": "Death.FM",
+     "url": "http://hi5.death.fm/",
+     "homepage": "https://death.fm/"
+    },
+    {
+     "name": "Doomnation Radio",
+     "url": "https://s2.voscast.com:11123/stream",
+     "homepage": "https://www.doomnationradio.com/"
+    },
+    {
+     "name": "Hard Rock Hell Radio",
+     "url": "http://167.114.174.197:9254/stream",
+     "homepage": "https://hardrockhellradio.com/"
+    },
+    {
+     "name": "ISKC - Extreme Metal",
+     "url": "http://mediaserv68.live-streams.nl:8012/ExtremeMetal",
+     "homepage": "https://iskcrocks.com/"
+    },
+    {
+     "name": "Metal Devastation",
+     "url": "https://c13.radioboss.fm:18099/stream",
+     "homepage": "https://metaldevastationradio.com/"
+    },
+    {
+     "name": "NTS - The Pit",
+     "url": "https://stream-mixtape-geo.ntslive.net/mixtape34",
+     "homepage": "https://www.nts.live/infinite-mixtapes/the-pit"
+    },
+    {
+     "name": "Prog Palace Radio",
+     "url": "https://cheetah.streemlion.com/progpalace64",
+     "homepage": "https://www.progpalaceradio.com/"
+    },
+    {
+     "name": "SomaFM - Metal Detector",
+     "url": "https://ice1.somafm.com/metal-128-aac",
+     "homepage": "https://somafm.com/metal/"
+    },
+    {
+     "name": "Terra Relicta Radio",
+     "url": "https://a3.asurahosting.com/listen/terra/radio.mp3",
+     "homepage": "https://www.terrarelicta.com/"
+    },
+    {
+     "name": "TotalRock",
+     "url": "https://s3.citrus3.com:8056/stream",
+     "homepage": "https://www.totalrock.com/"
+    },
+    {
+     "name": "Violent Forces Radio - General Thrash",
+     "url": "https://www.tuneintoradio1.com/listen/violent_forces_radio/radio.mp3",
+     "homepage": "https://www.violentforcesradio.com"
+    }
+   ]
+  },
+  {
+   "id": "news-spoken-word",
+   "name": "News & Spoken Word",
+   "nameZh": "新闻 · 谈话",
+   "order": 9,
+   "stations": [
+    {
+     "name": "AudioBookRadio",
+     "url": "https://audiobookradio.out.airtime.pro/audiobookradio_a",
+     "homepage": "http://www.audiobookradio.net/"
+    },
+    {
+     "name": "BBC Radio 4",
+     "url": "http://as-hls-ww-live.akamaized.net/pool_55057080/live/ww/bbc_radio_fourfm/bbc_radio_fourfm.isml/bbc_radio_fourfm-audio%3d128000.norewind.m3u8",
+     "homepage": "https://www.bbc.co.uk/sounds/play/live/bbc_radio_fourfm"
+    },
+    {
+     "name": "BBC World Service",
+     "url": "http://stream.live.vc.bbcmedia.co.uk/bbc_world_service",
+     "homepage": "https://www.bbc.co.uk/sounds/play/live/bbc_world_service"
+    },
+    {
+     "name": "Historyradio.org",
+     "url": "http://stream.radiojar.com/6bmecgg3wd5tv",
+     "homepage": "https://historyradio.org"
+    },
+    {
+     "name": "Horror Radio",
+     "url": "https://eu1.fastcast4u.com/proxy/stevende1?mp=/,",
+     "homepage": "https://darkentertainments.com/"
+    },
+    {
+     "name": "The Ultimate Art Bell",
+     "url": "http://stream.willstare.com:8450/,",
+     "homepage": "https://www.willstare.com/art-bell-repository/"
+    },
+    {
+     "name": "Vintage ROKiT - Crime and Suspense",
+     "url": "http://streaming04.liveboxstream.uk:8168/stream",
+     "homepage": "https://rokitradio.com/"
+    }
+   ]
+  },
+  {
+   "id": "reggae-dub",
+   "name": "Reggae & Dub",
+   "nameZh": "雷鬼 · Dub",
+   "order": 10,
+   "stations": [
+    {
+     "name": "Alpha Boys School Radio",
+     "url": "http://alphaboys-live.streamguys1.com/alphaboys.mp3",
+     "homepage": "https://alphaboysschoolradio.com/"
+    },
+    {
+     "name": "Badam Radio",
+     "url": "https://listen.radioking.com/radio/105610/stream/144949",
+     "homepage": "https://badam-radio.radioweb.co/"
+    },
+    {
+     "name": "Dr. Dick's Dub Shack",
+     "url": "https://streamer.radio.co/s0635c8b0d/listen",
+     "homepage": "https://drdicksdubshack.com/"
+    },
+    {
+     "name": "FIP Reggae",
+     "url": "http://icecast.radiofrance.fr/fipreggae-hifi.aac",
+     "homepage": "https://www.radiofrance.fr/fip/radio-reggae"
+    },
+    {
+     "name": "Irie FM",
+     "url": "https://usa19.fastcast4u.com:7430/,",
+     "homepage": "https://iriefm.net/"
+    },
+    {
+     "name": "King Dub Radio",
+     "url": "http://london-dedicated.myautodj.com:8862/stream",
+     "homepage": "http://www.kingdubfamily.com/"
+    },
+    {
+     "name": "NTS - Island Time",
+     "url": "https://stream-mixtape-geo.ntslive.net/mixtape21",
+     "homepage": "https://www.nts.live/infinite-mixtapes/island-time"
+    },
+    {
+     "name": "Real Roots Radio",
+     "url": "https://streams.radio.co/s1df61e0af/listen",
+     "homepage": "https://realrootsradio.net/"
+    },
+    {
+     "name": "SomaFM - Heavyweight Reggae",
+     "url": "https://ice5.somafm.com/reggae-256-mp3",
+     "homepage": "https://somafm.com/reggae/"
+    },
+    {
+     "name": "UK Roots FM",
+     "url": "http://138.201.198.218:8043/,",
+     "homepage": "https://ukrootsfm.net/"
+    }
+   ]
+  },
+  {
+   "id": "rock-indie-alternative-country-folk",
+   "name": "Rock, Indie, Alternative, Country & Folk",
+   "nameZh": "摇滚 · 独立 · 民谣",
+   "order": 11,
+   "stations": [
+    {
+     "name": "Ace Cafe Radio",
+     "url": "https://listen.radioking.com/radio/69079/stream/106852",
+     "homepage": "https://acecafe.com/ace-cafe-radio/"
+    },
+    {
+     "name": "BAGeL Radio",
+     "url": "http://ais-sa3.cdnstream1.com/2606_128.aac",
+     "homepage": "https://www.bagelradio.com/"
+    },
+    {
+     "name": "BBC Radio 6 Music",
+     "url": "http://as-hls-ww-live.akamaized.net/pool_81827798/live/ww/bbc_6music/bbc_6music.isml/bbc_6music-audio%3d320000.norewind.m3u8",
+     "homepage": "https://www.bbc.co.uk/sounds/play/live/bbc_6music"
+    },
+    {
+     "name": "Birch Street Radio",
+     "url": "https://streaming.live365.com/a97155",
+     "homepage": "https://birchstreetradio.com/"
+    },
+    {
+     "name": "Boogaloo Radio",
+     "url": "https://streams.radio.co/sb88c742f0/listen",
+     "homepage": "https://www.boogalooradio.com/"
+    },
+    {
+     "name": "The Current",
+     "url": "https://current.stream.publicradio.org/current.mp3",
+     "homepage": "https://thecurrent.org"
+    },
+    {
+     "name": "DARE FM",
+     "url": "http://hydra.cdnstream.com/1552_128",
+     "homepage": "https://wdarefm.com/"
+    },
+    {
+     "name": "Delicious Agony",
+     "url": "http://deliciousagony.streamguys1.com/",
+     "homepage": "http://www.deliciousagony.com/"
+    },
+    {
+     "name": "Folk Alley",
+     "url": "https://freshgrass.streamguys1.com/folkalley-128mp3",
+     "homepage": "https://folkalley.com/"
+    },
+    {
+     "name": "Grateful Dead Radio",
+     "url": "http://cassini.shoutca.st:8574/stream",
+     "homepage": "https://www.gdradio.net/"
+    },
+    {
+     "name": "Ignore Radio Shoegaze",
+     "url": "https://sp1.autopo.st/8026/stream",
+     "homepage": "https://ignoreradio.com/"
+    },
+    {
+     "name": "KEXP 90.3",
+     "url": "https://kexp.streamguys1.com/kexp160.aac",
+     "homepage": "https://www.kexp.org/listen/"
+    },
+    {
+     "name": "Krautrock-World",
+     "url": "https://krautrockworld.stream.laut.fm/krautrockworld",
+     "homepage": "https://krautrock-world.com/"
+    },
+    {
+     "name": "Live Jam Radio",
+     "url": "https://stations.radio-host.com/proxy/livejam/stream",
+     "homepage": "https://livejamradio.com/"
+    },
+    {
+     "name": "Morow",
+     "url": "https://www.morow.com/morow.pls",
+     "homepage": "https://www.morow.com/"
+    },
+    {
+     "name": "NTS - Memory Lane",
+     "url": "https://stream-mixtape-geo.ntslive.net/mixtape6",
+     "homepage": "https://www.nts.live/infinite-mixtapes/memory-lane"
+    },
+    {
+     "name": "NTS - The Tube",
+     "url": "https://stream-mixtape-geo.ntslive.net/mixtape26",
+     "homepage": "https://www.nts.live/infinite-mixtapes/the-tube"
+    },
+    {
+     "name": "Nugs Radio",
+     "url": "https://radio.nugs.net/nugsnet",
+     "homepage": "https://www.nugs.net/"
+    },
+    {
+     "name": "Radio Paradise",
+     "url": "http://stream-dc1.radioparadise.com/rp_192m.ogg",
+     "homepage": "https://radioparadise.com/"
+    },
+    {
+     "name": "Radio Woodstock",
+     "url": "https://stream.revma.ihrhls.com/zc7332",
+     "homepage": "https://radiowoodstock.com/"
+    },
+    {
+     "name": "Real Punk Radio",
+     "url": "http://149.56.155.73:8080/stream",
+     "homepage": "https://realpunkradio.com/"
+    },
+    {
+     "name": "The SoCal Sound",
+     "url": "https://stream.thesocalsound.org/1",
+     "homepage": "https://thesocalsound.org/"
+    },
+    {
+     "name": "Yacht Rock Miami",
+     "url": "https://usa20.fastcast4u.com:4100/1753014835",
+     "homepage": "https://yachtrockmiami.com/"
+    }
+   ]
+  },
+  {
+   "id": "video-game-chiptune-soundtracks",
+   "name": "Video Game, Chiptune & Soundtracks",
+   "nameZh": "游戏 · 芯片音乐",
+   "order": 12,
+   "stations": [
+    {
+     "name": "Arcade Radio",
+     "url": "https://server10.reliastream.com/proxy/arcaderadio?mp=/stream2",
+     "homepage": "https://arcaderadio.com/index.html"
+    },
+    {
+     "name": "Cinemix",
+     "url": "https://kathy.torontocast.com:1825/stream",
+     "homepage": "https://www.cinemix.us/"
+    },
+    {
+     "name": "Classic FM - Video Game Music",
+     "url": "https://icecast.thisisdax.com/ClassicFM-M-Gaming",
+     "homepage": "https://www.classicfm.com/discover-music/periods-genres/video-game/"
+    },
+    {
+     "name": "Classic Videogames",
+     "url": "http://195.201.9.210:1541/stream/2/",
+     "homepage": "https://www.classic-videogames.de/radio/"
+    },
+    {
+     "name": "COMMODEXPLORER",
+     "url": "https://manager8.streamradio.fr:2295/stream",
+     "homepage": "https://commodexplorer.c-prod.net/"
+    },
+    {
+     "name": "CVGM",
+     "url": "https://slacker.cvgm.net/cvgm192",
+     "homepage": "https://www.cvgm.net/"
+    },
+    {
+     "name": "Ericade Radio",
+     "url": "https://radio.ericade.net/sc/stream/1/",
+     "homepage": "https://radio.ericade.net/"
+    },
+    {
+     "name": "FunkyUncleFM",
+     "url": "https://funkyunclefm.net/stream_vorbis192",
+     "homepage": "https://funkyunclefm.net"
+    },
+    {
+     "name": "Gensokyo Radio",
+     "url": "https://stream.gensokyoradio.net/3",
+     "homepage": "https://gensokyoradio.net"
+    },
+    {
+     "name": "GTA Radio",
+     "url": "https://stream.laut.fm/gta-classics",
+     "homepage": "https://laut.fm/gta-classics"
+    },
+    {
+     "name": "Gyusyabu",
+     "url": "http://gyusyabu.ddo.jp:8000/;stream.mp3",
+     "homepage": "http://gyusyabu.ddo.jp/"
+    },
+    {
+     "name": "Intergalactic FM - The Dream Machine",
+     "url": "https://radio.intergalactic.fm/3A",
+     "homepage": "https://intergalactic.fm/"
+    },
+    {
+     "name": "Kaaosradio",
+     "url": "https://kaaosradio.fi:8001/chip",
+     "homepage": "https://kaaosradio.fi/"
+    },
+    {
+     "name": "Kohina",
+     "url": "https://kohina.duckdns.org/icecast/stream.ogg",
+     "homepage": "https://kohina.com"
+    },
+    {
+     "name": "LapFox Radio",
+     "url": "https://radio.lapfoxradio.com/radio/8000/stream-ogg-320.ogg",
+     "homepage": "https://lapfoxradio.com"
+    },
+    {
+     "name": "Liquid DooM Radio",
+     "url": "http://83.240.65.106:8000/doom",
+     "homepage": "https://liquiddoom.net/"
+    },
+    {
+     "name": "Nectarine",
+     "url": "http://necta.burn.net:8000/nectarine",
+     "homepage": "https://www.scenestream.net/"
+    },
+    {
+     "name": "No Life Radio",
+     "url": "https://listen.nolife-radio.com/stream",
+     "homepage": "https://nolife-radio.com/"
+    },
+    {
+     "name": "NTS - Otaku",
+     "url": "https://stream-mixtape-geo.ntslive.net/mixtape36",
+     "homepage": "https://www.nts.live/infinite-mixtapes/otaku"
+    },
+    {
+     "name": "Radio Rivendell",
+     "url": "https://play.radiorivendell.com/radio/8000/radio.mp3",
+     "homepage": "https://radiorivendell.com/"
+    },
+    {
+     "name": "RadioSEGA",
+     "url": "http://content.radiosega.net:8006/live",
+     "homepage": "https://www.radiosega.net/"
+    },
+    {
+     "name": "Rainwave - Game",
+     "url": "http://allrelays.rainwave.cc/game.mp3",
+     "homepage": "https://rainwave.cc/"
+    },
+    {
+     "name": "RPGamers Radio",
+     "url": "https://listen.rpgamers.net/rpgn",
+     "homepage": "https://www.rpgamers.net/radio/"
+    },
+    {
+     "name": "SceneSat",
+     "url": "https://streams.scenesat.com/main/hq.mp3",
+     "homepage": "https://scenesat.com/"
+    },
+    {
+     "name": "Shmup Radio",
+     "url": "https://stream.shmupradio.com/320",
+     "homepage": "https://shmupradio.com/"
+    },
+    {
+     "name": "Slay Radio",
+     "url": "http://relay4.slayradio.org:8300/",
+     "homepage": "https://slayradio.org/"
+    },
+    {
+     "name": "SpriteLayer",
+     "url": "http://www.spritelayerradio.com:8010/all",
+     "homepage": "https://www.spritelayerradio.com/"
+    },
+    {
+     "name": "Streaming Soundtracks",
+     "url": "http://hi5.streamingsoundtracks.com/",
+     "homepage": "http://www.streamingsoundtracks.com/"
+    }
+   ]
+  },
+  {
+   "id": "world-regional",
+   "name": "World & Regional",
+   "nameZh": "世界音乐 · 地域",
+   "order": 13,
+   "stations": [
+    {
+     "name": "Alefa Music",
+     "url": "http://www.radioking.com/play/alefamusic",
+     "homepage": "https://alefamusic.net/"
+    },
+    {
+     "name": "CeltCast",
+     "url": "http://caster04.streampakket.com:8982/1_mp3_192",
+     "homepage": "https://celtcast.com/"
+    },
+    {
+     "name": "Celtic Music Radio",
+     "url": "https://streaming.broadcastradio.com:11135/celtic",
+     "homepage": "https://www.celticmusicradio.net/"
+    },
+    {
+     "name": "CeolFM",
+     "url": "https://listen.ceol.fm/auto",
+     "homepage": "https://ceol.fm/"
+    },
+    {
+     "name": "Dansbandskanalen",
+     "url": "https://fm09-ice.stream.khz.se/fm09_mp3",
+     "homepage": "https://www.dansbandskanalen.se/"
+    },
+    {
+     "name": "Daybreak Star Radio",
+     "url": "http://ice9.securenetsystems.net/DSR",
+     "homepage": "https://daybreakstarradio.com"
+    },
+    {
+     "name": "Gladys Palmera Colección",
+     "url": "http://streams.radio.co/s496c4d2e8/listen",
+     "homepage": "https://gladyspalmera.com/coleccion"
+    },
+    {
+     "name": "J1 Radio - Gold",
+     "url": "http://gold.j1fm.tokyo/",
+     "homepage": "https://www.j1fm.tokyo"
+    },
+    {
+     "name": "KBON 101.1",
+     "url": "http://ice64.securenetsystems.net/KBON",
+     "homepage": "https://www.kbon.com/"
+    },
+    {
+     "name": "listen.moe",
+     "url": "https://listen.moe/stream",
+     "homepage": "https://listen.moe/"
+    },
+    {
+     "name": "Oroko Radio",
+     "url": "https://oroko-radio.radiocult.fm/stream",
+     "homepage": "https://oroko.live/"
+    },
+    {
+     "name": "Pan African Space Station",
+     "url": "https://pass.out.airtime.pro/pass_a",
+     "homepage": "https://panafricanspacestation.org.za/"
+    },
+    {
+     "name": "Pyongyang Radio FM",
+     "url": "https://listen7.myradio24.com/69366",
+     "homepage": "https://kfaspain.es/emisora-central-de-corea-pyongyang-fm/"
+    },
+    {
+     "name": "Radio Al-Hara",
+     "url": "https://stream.radiojar.com/78cxy6wkxtzuv",
+     "homepage": "https://www.radioalhara.net/"
+    },
+    {
+     "name": "Seribatu",
+     "url": "http://radioseribatu.out.airtime.pro:8000/radioseribatu_a",
+     "homepage": "https://www.radioseribatu.com/radioseribatu"
+    },
+    {
+     "name": "Svensk Folkmusik AkkA",
+     "url": "https://mediaserv38.live-streams.nl:8107/stream",
+     "homepage": "https://www.svenskfolkmusik.nu/"
+    }
+   ]
+  },
+  {
+   "id": "christmas-holiday",
+   "name": "Christmas & Holiday",
+   "nameZh": "圣诞与节日",
+   "order": 14,
+   "stations": [
+    {
+     "name": "Christmas FM Ireland",
+     "url": "https://christmasfm.cdnstream1.com/2547_128.mp3",
+     "homepage": "https://christmasfm.com/"
+    },
+    {
+     "name": "WALM - Christmas Vinyl",
+     "url": "https://icecast.walmradio.com:8443/christmas",
+     "homepage": "https://walmradio.com/station.php?station=christmas"
+    }
+   ]
+  },
+  {
+   "id": "experimental-nerdy-scanners",
+   "name": "Experimental, Nerdy & Scanners",
+   "nameZh": "实验 · 极客",
+   "order": 15,
+   "stations": [
+    {
+     "name": "DriftConditions",
+     "url": "https://usa14.fastcast4u.com/proxy/wmodes?mp=/1",
+     "homepage": "https://driftconditions.org/"
+    },
+    {
+     "name": "The Frequency",
+     "url": "https://stream.bestairadio.com/live",
+     "homepage": "https://bestairadio.com/"
+    },
+    {
+     "name": "Mechanical Music Radio",
+     "url": "https://global.citrus3.com:2020/stream/mechanicalmusicradio",
+     "homepage": "https://mechanicalmusicradio.com"
+    },
+    {
+     "name": "P-Node",
+     "url": "http://stream.p-node.org/dab.mp3",
+     "homepage": "https://p-node.org"
+    },
+    {
+     "name": "Payphone Radio",
+     "url": "https://centova11.instainternet.com/proxy/marktho1?mp=/stream",
+     "homepage": "https://www.payphone-project.com/payphone-radio-network"
+    },
+    {
+     "name": "Radio Brennpunkt",
+     "url": "https://radio-brennpunkt.radiocult.fm/stream",
+     "homepage": "https://radiobrennpunkt.org/"
+    },
+    {
+     "name": "Radio is a Foreign Country",
+     "url": "https://s5.radio.co/s20251311a/listen",
+     "homepage": "https://www.radioisaforeigncountry.org/"
+    },
+    {
+     "name": "Radio Paisajes",
+     "url": "https://stream.zeno.fm/nftv61u086etv",
+     "homepage": "https://radiopaisajes.cl/"
+    },
+    {
+     "name": "Shirley & Spinoza",
+     "url": "https://s2.radio.co/sec5fa6199/listen",
+     "homepage": "https://compound-eye.org"
+    },
+    {
+     "name": "Spinning Seal FM",
+     "url": "https://stream.zeno.fm/9q3ez3k3fchvv",
+     "homepage": "https://zeno.fm/radio/SpinningSeal/"
+    },
+    {
+     "name": "TildeRadio",
+     "url": "https://azuracast.tilderadio.org/radio/8000/radio.mp3",
+     "homepage": "https://tilderadio.org/"
+    },
+    {
+     "name": "Wave Farm",
+     "url": "https://audio.wavefarm.org/pondstation.mp3",
+     "homepage": "https://wavefarm.org/"
+    }
+   ]
+  }
+ ]
+}

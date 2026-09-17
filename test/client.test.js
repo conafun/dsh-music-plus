@@ -22,6 +22,40 @@ let manifest = null
 let prefsServer = {}
 let podcastsServer = []
 let podcastPlayServer = null
+let radioSnapshot = null
+let lastRadioPost = null
+// 每次 bootClient 重建（FakeAudio 实例，用于断言真正驱动了哪个 URL）
+const audioInstances = []
+
+// 电台库快照的最小样本：两个风格 + 一台直链台 + 一台 HLS 台（后者在 UI 里必须置灰）。
+function baseRadioSnapshot() {
+  const st = (id, name, url, categoryId, categoryName, extra) => ({
+    id, name, url, homepage: 'https://' + id + '.example/', categoryId, categoryName,
+    sourceId: 'builtin-recommended', sourceName: '推荐网络电台',
+    custom: false, hidden: false, fav: false, down: false, hls: false, playlist: false,
+    quality: 'MP3', tags: [], country: '', probe: null, resolved: '', ...(extra || {}),
+  })
+  return {
+    ok: true,
+    builtin: {
+      name: '推荐网络电台', url: 'https://github.com/conafun/recommended-radio-streams',
+      license: 'CC0-1.0', revision: 'ee4dc39329953e82e71e78dc28d4d61209a440eb', updated: false,
+    },
+    sources: [],
+    categories: [
+      { id: 'electronic', name: 'Electronic', nameZh: '电子', order: 0, hidden: false, custom: false, count: 2 },
+      { id: 'jazz-blues', name: 'Jazz & Blues', nameZh: '爵士 · 布鲁斯', order: 1, hidden: false, custom: false, count: 1 },
+    ],
+    stations: [
+      st('st-00000001', 'NTS - Channel 1', 'https://stream-1.nts.live', 'electronic', 'Electronic'),
+      st('st-00000002', 'Jazz24', 'https://knkx.example/6285', 'jazz-blues', 'Jazz & Blues', { quality: 'MP3 · 256kbps' }),
+      st('st-00000003', 'HLS Only', 'https://x/hls.m3u8', 'electronic', 'Electronic', { hls: true, quality: 'HLS' }),
+    ],
+    favorites: [],
+    prefs: { lastStationId: '', hideDead: false },
+    stats: { stations: 3, visible: 3, categories: 2, custom: 0, hls: 1, playlist: 0, probe: { ok: 1, dead: 1, unknown: 1, lastProbeAt: Date.now() } },
+  }
+}
 
 function makePlaylist(id, name, fixed, paths) {
   return {
@@ -45,6 +79,9 @@ class FakeAudio {
     this.currentSrc = ''
     this.preload = 'auto'
     this.style = {}
+    // 记录实例：真实环境里 <audio> 会被挂到 body，但 FakeAudio 不是 DOM 节点，
+    // 挂载会失败（被插件吞掉），所以断言播放要在这里拿到元素本身。
+    audioInstances.push(this)
   }
   addEventListener(t, fn) { (this.listeners[t] = this.listeners[t] || []).push(fn) }
   removeEventListener() {}
@@ -75,6 +112,20 @@ async function fetchStub(url, opts) {
   }
   if (u === '/dsh-music-plus/manifest') return jsonRes(manifest)
   if (u === '/dsh-music-plus/intent') return jsonRes(null)
+  // 网络电台：GET 返回整份快照；写操作在真实宿主里也回传整份快照，这里照做。
+  if (u === '/dsh-music-plus/radio') return jsonRes(radioSnapshot)
+  if (u.startsWith('/dsh-music-plus/radio/')) {
+    const body = JSON.parse(o.body || '{}')
+    lastRadioPost = { path: u.replace('/dsh-music-plus/radio/', ''), body }
+    if (u === '/dsh-music-plus/radio/favorite') {
+      radioSnapshot = {
+        ...radioSnapshot,
+        favorites: body.fav ? [body.id] : [],
+        stations: radioSnapshot.stations.map((x) => ({ ...x, fav: body.fav === true && x.id === body.id })),
+      }
+    }
+    return jsonRes({ ...radioSnapshot, ok: true })
+  }
   if (u === '/dsh-music-plus/podcasts') return jsonRes({ ok: true, podcasts: podcastsServer })
   if (u === '/dsh-music-plus/podcasts/add' && o && o.method === 'POST') {
     const body = JSON.parse(o.body || '{}')
@@ -119,6 +170,7 @@ async function fetchStub(url, opts) {
 async function bootClient() {
   factory = null
   registered = []
+  audioInstances.length = 0
   window.__ModuleLoader__ = { load: (def) => { factory = def.factory } }
   vi.stubGlobal('Audio', FakeAudio)
   vi.stubGlobal('fetch', fetchStub)
@@ -181,6 +233,8 @@ beforeEach(async () => {
   podcastsServer = []
   podcastPlayServer = null
   manifest = baseManifest()
+  radioSnapshot = baseRadioSnapshot()
+  lastRadioPost = null
   await bootClient()
 })
 
@@ -350,6 +404,97 @@ describe('dsh-music-plus podcast', () => {
     await act(async () => { await new Promise((r) => setTimeout(r, 0)) })
     expect(div.textContent).toContain('A1')
     expect(div.textContent).toContain('B1')
+    unmount()
+  })
+})
+
+describe('dsh-music-plus 设置 → 网络电台', () => {
+  const radioFactory = () => registered.find((r) => r.id === 'music-radio').elementFactory
+  const settle = async () => { await act(async () => { await new Promise((r) => setTimeout(r, 0)) }) }
+
+  it('注册成一个独立的设置页 section（id music-radio），电台 UI 不落在播放面板里', () => {
+    expect(registered.find((r) => r.id === 'music-radio')).toBeTruthy()
+    // 播放面板本身没有被塞进电台页签（用户要求：前端不新增任何东西）
+    const panel = registered.find((r) => r.id === 'music-player-plus-panel').elementFactory()
+    const { div, unmount } = mount(panel)
+    const tabs = [...div.querySelectorAll('.dsh-music-tab')].map((b) => b.textContent)
+    expect(tabs).toEqual(['本地音乐', '播客', '系统配置'])
+    unmount()
+  })
+
+  it('渲染电台库：统计、风格 chips、按风格分组的列表、HLS 台置灰不可播', async () => {
+    const { div, unmount } = mount(radioFactory()())
+    await settle()
+    expect(div.textContent).toContain('共 3 台')
+    const chips = [...div.querySelectorAll('.dsh-music-radio-chip')].map((b) => b.textContent)
+    expect(chips[0]).toContain('全部')
+    expect(chips.some((c) => c.includes('电子'))).toBe(true)
+    expect(chips.some((c) => c.includes('爵士'))).toBe(true)
+    // 分组标题 = 风格
+    const groups = [...div.querySelectorAll('.dsh-music-radio-group')].map((x) => x.textContent)
+    expect(groups.some((g) => g.includes('电子'))).toBe(true)
+    expect(groups.some((g) => g.includes('爵士'))).toBe(true)
+    const names = [...div.querySelectorAll('.dsh-music-radio-name')].map((x) => x.textContent).join(' ')
+    expect(names).toContain('NTS')
+    expect(names).toContain('Jazz24')
+    // HLS 台：标出「需 HLS」且播放按钮禁用
+    expect([...div.querySelectorAll('.dsh-music-radio-badge')].map((b) => b.textContent)).toContain('需 HLS')
+    expect(div.querySelectorAll('.dsh-music-radio-row.hls')).toHaveLength(1)
+    expect(div.querySelector('.dsh-music-radio-row.hls .dsh-music-radio-play').disabled).toBe(true)
+    unmount()
+  })
+
+  it('搜索框按台名/风格过滤列表', async () => {
+    const { div, unmount } = mount(radioFactory()())
+    await settle()
+    setInput(div.querySelector('.dsh-music-radio-search'), 'jazz')
+    await settle()
+    const names = [...div.querySelectorAll('.dsh-music-radio-name')].map((x) => x.textContent).join(' ')
+    expect(names).toContain('Jazz24')
+    expect(names).not.toContain('NTS')
+    unmount()
+  })
+
+  it('点 ▶ 用现有播放引擎播放电台，播放条显示台名（未新增任何播放器 UI）', async () => {
+    const { div, unmount } = mount(radioFactory()())
+    await settle()
+    const nts = [...div.querySelectorAll('.dsh-music-radio-row')].find((r) => r.textContent.includes('NTS'))
+    act(() => { nts.querySelector('.dsh-music-radio-play').dispatchEvent(new MouseEvent('click', { bubbles: true })) })
+    await settle()
+    // 复用同一个 <audio> 元素：src 直接指向电台流地址（HLS 台会被拦下，这里不是）
+    expect(audioInstances.some((a) => a.src === 'https://stream-1.nts.live')).toBe(true)
+    // 既有的播放条（原本就有）显示台名 —— 电台没有新增任何播放条/面板界面
+    const bar = registered.find((r) => r.id === 'music-player-plus-bar').elementFactory()
+    expect(renderToString(bar)).toContain('NTS - Channel 1')
+    // 当前行高亮
+    expect([...div.querySelectorAll('.dsh-music-radio-row.current')].map((r) => r.textContent).join(' ')).toContain('NTS')
+    unmount()
+  })
+
+  it('收藏按钮把状态写回宿主（按电台 id）', async () => {
+    const { div, unmount } = mount(radioFactory()())
+    await settle()
+    // 列表按「风格顺序 → 台名」排序，所以按名字定位目标行，别依赖行序
+    const jazz = [...div.querySelectorAll('.dsh-music-radio-row')].find((r) => r.textContent.includes('Jazz24'))
+    const star = jazz.querySelector('.dsh-music-radio-star')
+    expect(star.className).not.toContain('on')
+    act(() => { star.dispatchEvent(new MouseEvent('click', { bubbles: true })) })
+    await settle()
+    expect(lastRadioPost).toEqual({ path: 'favorite', body: { id: 'st-00000002', fav: true } })
+    const jazzAfter = [...div.querySelectorAll('.dsh-music-radio-row')].find((r) => r.textContent.includes('Jazz24'))
+    expect(jazzAfter.querySelector('.dsh-music-radio-star').className).toContain('on')
+    unmount()
+  })
+
+  it('切到某个风格只显示该风格的台', async () => {
+    const { div, unmount } = mount(radioFactory()())
+    await settle()
+    const jazzChip = [...div.querySelectorAll('.dsh-music-radio-chip')].find((c) => c.textContent.includes('爵士'))
+    act(() => { jazzChip.dispatchEvent(new MouseEvent('click', { bubbles: true })) })
+    await settle()
+    const names = [...div.querySelectorAll('.dsh-music-radio-name')].map((x) => x.textContent).join(' ')
+    expect(names).toContain('Jazz24')
+    expect(names).not.toContain('NTS')
     unmount()
   })
 })
