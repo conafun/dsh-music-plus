@@ -408,23 +408,42 @@ describe('dsh-music-plus podcast', () => {
   })
 })
 
-describe('dsh-music-plus 设置 → 网络电台', () => {
-  const radioFactory = () => registered.find((r) => r.id === 'music-radio').elementFactory
+describe('dsh-music-plus 播放面板 → 网络电台页签', () => {
   const settle = async () => { await act(async () => { await new Promise((r) => setTimeout(r, 0)) }) }
+  // 打开播放面板并切到「网络电台」页签：电台整页就挂在这个页签里（切到才挂载）。
+  const openRadio = async () => {
+    const panel = registered.find((r) => r.id === 'music-player-plus-panel').elementFactory()
+    const m = mount(panel)
+    const tab = [...m.div.querySelectorAll('.dsh-music-tab')].find((b) => b.textContent === '网络电台')
+    act(() => { tab.dispatchEvent(new MouseEvent('click', { bubbles: true })) })
+    await settle()
+    return m
+  }
 
-  it('注册成一个独立的设置页 section（id music-radio），电台 UI 不落在播放面板里', () => {
-    expect(registered.find((r) => r.id === 'music-radio')).toBeTruthy()
-    // 播放面板本身没有被塞进电台页签（用户要求：前端不新增任何东西）
+  it('页签是 本地音乐 / 播客 / 网络电台 / 系统配置，且电台不再单独占用 DSH 设置页', () => {
     const panel = registered.find((r) => r.id === 'music-player-plus-panel').elementFactory()
     const { div, unmount } = mount(panel)
-    const tabs = [...div.querySelectorAll('.dsh-music-tab')].map((b) => b.textContent)
-    expect(tabs).toEqual(['本地音乐', '播客', '系统配置'])
+    expect([...div.querySelectorAll('.dsh-music-tab')].map((b) => b.textContent))
+      .toEqual(['本地音乐', '播客', '网络电台', '系统配置'])
+    // 电台界面统一在插件面板里，不再注册成 DSH 设置页的 section（避免两处入口）
+    expect(registered.find((r) => r.id === 'music-radio')).toBeUndefined()
+    unmount()
+  })
+
+  it('切到电台页签才挂载（其余页签下不渲染台列表）', async () => {
+    const panel = registered.find((r) => r.id === 'music-player-plus-panel').elementFactory()
+    const { div, unmount } = mount(panel)
+    await settle()
+    expect(div.querySelectorAll('.dsh-music-radio-row')).toHaveLength(0)
+    const tab = [...div.querySelectorAll('.dsh-music-tab')].find((b) => b.textContent === '网络电台')
+    act(() => { tab.dispatchEvent(new MouseEvent('click', { bubbles: true })) })
+    await settle()
+    expect(div.querySelectorAll('.dsh-music-radio-row').length).toBeGreaterThan(0)
     unmount()
   })
 
   it('渲染电台库：统计、风格 chips、按风格分组的列表、HLS 台置灰不可播', async () => {
-    const { div, unmount } = mount(radioFactory()())
-    await settle()
+    const { div, unmount } = await openRadio()
     expect(div.textContent).toContain('共 3 台')
     const chips = [...div.querySelectorAll('.dsh-music-radio-chip')].map((b) => b.textContent)
     expect(chips[0]).toContain('全部')
@@ -445,8 +464,7 @@ describe('dsh-music-plus 设置 → 网络电台', () => {
   })
 
   it('搜索框按台名/风格过滤列表', async () => {
-    const { div, unmount } = mount(radioFactory()())
-    await settle()
+    const { div, unmount } = await openRadio()
     setInput(div.querySelector('.dsh-music-radio-search'), 'jazz')
     await settle()
     const names = [...div.querySelectorAll('.dsh-music-radio-name')].map((x) => x.textContent).join(' ')
@@ -455,15 +473,14 @@ describe('dsh-music-plus 设置 → 网络电台', () => {
     unmount()
   })
 
-  it('点 ▶ 用现有播放引擎播放电台，播放条显示台名（未新增任何播放器 UI）', async () => {
-    const { div, unmount } = mount(radioFactory()())
-    await settle()
+  it('点 ▶ 用现有播放引擎播放电台，播放条显示台名（不新增播放器 UI）', async () => {
+    const { div, unmount } = await openRadio()
     const nts = [...div.querySelectorAll('.dsh-music-radio-row')].find((r) => r.textContent.includes('NTS'))
     act(() => { nts.querySelector('.dsh-music-radio-play').dispatchEvent(new MouseEvent('click', { bubbles: true })) })
     await settle()
     // 复用同一个 <audio> 元素：src 直接指向电台流地址（HLS 台会被拦下，这里不是）
     expect(audioInstances.some((a) => a.src === 'https://stream-1.nts.live')).toBe(true)
-    // 既有的播放条（原本就有）显示台名 —— 电台没有新增任何播放条/面板界面
+    // 既有的播放条（原本就有）显示台名 —— 电台没有新增任何播放条界面
     const bar = registered.find((r) => r.id === 'music-player-plus-bar').elementFactory()
     expect(renderToString(bar)).toContain('NTS - Channel 1')
     // 当前行高亮
@@ -472,8 +489,7 @@ describe('dsh-music-plus 设置 → 网络电台', () => {
   })
 
   it('收藏按钮把状态写回宿主（按电台 id）', async () => {
-    const { div, unmount } = mount(radioFactory()())
-    await settle()
+    const { div, unmount } = await openRadio()
     // 列表按「风格顺序 → 台名」排序，所以按名字定位目标行，别依赖行序
     const jazz = [...div.querySelectorAll('.dsh-music-radio-row')].find((r) => r.textContent.includes('Jazz24'))
     const star = jazz.querySelector('.dsh-music-radio-star')
@@ -487,8 +503,7 @@ describe('dsh-music-plus 设置 → 网络电台', () => {
   })
 
   it('切到某个风格只显示该风格的台', async () => {
-    const { div, unmount } = mount(radioFactory()())
-    await settle()
+    const { div, unmount } = await openRadio()
     const jazzChip = [...div.querySelectorAll('.dsh-music-radio-chip')].find((c) => c.textContent.includes('爵士'))
     act(() => { jazzChip.dispatchEvent(new MouseEvent('click', { bubbles: true })) })
     await settle()
