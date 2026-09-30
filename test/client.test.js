@@ -367,6 +367,86 @@ describe('dsh-music-plus podcast', () => {
     unmount()
   })
 
+  it('恢复态（暂停点 0）点 ▶ 必须给 <audio> 装上 src —— 回归：旧实现这里静默失败，只能点下一首', async () => {
+    // 模拟上次会话把本地音乐暂停在 0:00：position=0 会让 restoredMusicPos 保持 null。
+    prefsServer['dsh-music-playback'] = JSON.stringify({
+      kind: 'local', scope: { kind: 'library' }, id: '0', name: 'a.mp3', position: 0, duration: 120, ts: Date.now(),
+    })
+    factory = null; registered = []
+    vi.resetModules()
+    await bootClient()
+    await act(async () => { await new Promise((r) => setTimeout(r, 0)) })
+
+    const bar = registered.find((r) => r.id === 'music-player-plus-bar').elementFactory()
+    const { div, unmount } = mount(bar)
+    // 恢复态：播放条上已经有曲目（播放/暂停键只在 hasTrack 时渲染），
+    // 但 <audio> 还没有 src（恢复时刻意不碰媒体元素）
+    const btn = [...div.querySelectorAll('.dsh-music-bar-btn')].find((b) => b.title === '播放/暂停')
+    expect(btn).toBeTruthy()
+    expect(audioInstances.every((a) => a.src !== '/dsh-music-plus/0')).toBe(true)
+
+    act(() => { btn.dispatchEvent(new MouseEvent('click', { bubbles: true })) })
+
+    // 修复点：src 必须被装上并且真的进入播放。旧实现把「设置 src」关在
+    // restoredMusicPos > 0 的分支里，暂停点为 0 时 play() 会在无源元素上被拒绝
+    // （NotSupportedError）并被静默吞掉 —— 用户看到的就是「点 ▶ 没反应」。
+    expect(audioInstances.some((a) => a.src === '/dsh-music-plus/0' && a.paused === false)).toBe(true)
+    unmount()
+  })
+
+  it('恢复态（暂停点 12s）点 ▶ 要装上 src、立即播放，且 seek 必须**延后到元数据就绪**', async () => {
+    prefsServer['dsh-music-playback'] = JSON.stringify({
+      kind: 'local', scope: { kind: 'library' }, id: '0', name: 'a.mp3', position: 12, duration: 120, ts: Date.now(),
+    })
+    factory = null; registered = []
+    vi.resetModules()
+    await bootClient()
+    await act(async () => { await new Promise((r) => setTimeout(r, 0)) })
+
+    const bar = registered.find((r) => r.id === 'music-player-plus-bar').elementFactory()
+    const { div, unmount } = mount(bar)
+    const btn = [...div.querySelectorAll('.dsh-music-bar-btn')].find((b) => b.title === '播放/暂停')
+    act(() => { btn.dispatchEvent(new MouseEvent('click', { bubbles: true })) })
+
+    const el = audioInstances.find((a) => a.src === '/dsh-music-plus/0')
+    expect(el).toBeTruthy()
+    expect(el.paused).toBe(false)
+    // ⚠️ 关键回归点：不能在 load() 之后同一轮就 seek —— Chromium 里那会让这次加载作废，
+    // play() 的 promise 一直挂起，用户看到的就是「点 ▶ 毫无反应，点下一首才正常」。
+    expect(el.currentTime).toBe(0)
+    // 元数据就绪后才真正定位到断点
+    act(() => { for (const fn of (el.listeners.loadedmetadata || [])) fn() })
+    expect(el.currentTime).toBe(12)
+    unmount()
+  })
+
+  it('频谱画布在右侧控制组里（紧贴时长），歌名另有可省略号的文字层 —— 回归：长歌名被频谱遮挡', async () => {
+    // 先造一个恢复态，让播放条有当前曲目（只有 hasTrack 时才渲染播放键）
+    prefsServer['dsh-music-playback'] = JSON.stringify({
+      kind: 'local', scope: { kind: 'library' }, id: '0', name: 'a.mp3', position: 0, duration: 120, ts: Date.now(),
+    })
+    factory = null; registered = []
+    vi.resetModules()
+    await bootClient()
+    await act(async () => { await new Promise((r) => setTimeout(r, 0)) })
+
+    const bar = registered.find((r) => r.id === 'music-player-plus-bar').elementFactory()
+    const { div, unmount } = mount(bar)
+    // 先点 ▶ 起播（jsdom 的假 <audio> 不派发事件，手动触发 play 让 playing 态成立）
+    const btn = [...div.querySelectorAll('.dsh-music-bar-btn')].find((b) => b.title === '播放/暂停')
+    act(() => { btn.dispatchEvent(new MouseEvent('click', { bubbles: true })) })
+    const el = audioInstances.find((a) => a.src !== '')
+    expect(el).toBeTruthy()
+    act(() => { for (const fn of (el.listeners.play || [])) fn() })
+
+    // 歌名有独立的可省略号文字层（inline-flex 容器上的 text-overflow 对匿名子项不生效）
+    expect(div.querySelector('.dsh-music-bar-name .dsh-music-bar-name-text')).toBeTruthy()
+    // 频谱画布必须在右侧控制组内，不再紧跟歌名
+    expect(div.querySelector('.dsh-music-bar-controls .dsh-music-viz')).toBeTruthy()
+    expect(div.querySelector('.dsh-music-bar-name .dsh-music-viz')).toBeNull()
+    unmount()
+  })
+
   it('shows an aggregated "全部" feed and switches to a specific source on click', async () => {
     // Pre-seed two distinct subscriptions so the panel renders both source cards
     // and the aggregated "all" feed.
