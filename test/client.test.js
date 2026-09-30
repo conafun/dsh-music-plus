@@ -411,6 +411,9 @@ describe('dsh-music-plus podcast', () => {
     const el = audioInstances.find((a) => a.src === '/dsh-music-plus/0')
     expect(el).toBeTruthy()
     expect(el.paused).toBe(false)
+    // 浏览器里没有 __DSH_TRANSPORT__：保持根相对地址，且不给媒体加 crossOrigin
+    // （外站电台/播客没开 CORS，加了会直接放不出声）
+    expect(el.crossOrigin).toBeUndefined()
     // ⚠️ 关键回归点：不能在 load() 之后同一轮就 seek —— Chromium 里那会让这次加载作废，
     // play() 的 promise 一直挂起，用户看到的就是「点 ▶ 毫无反应，点下一首才正常」。
     expect(el.currentTime).toBe(0)
@@ -418,6 +421,36 @@ describe('dsh-music-plus podcast', () => {
     act(() => { for (const fn of (el.listeners.loadedmetadata || [])) fn() })
     expect(el.currentTime).toBe(12)
     unmount()
+  })
+
+  it('桌面版：媒体必须走 __DSH_TRANSPORT__.streamBaseUrl（直连 HTTP 才能 seek），并为本机媒体开 crossOrigin', async () => {
+    // Electron 桌面版会在加载插件脚本之前注入真实本地 HTTP origin（见 web 前端 boot 流程）
+    globalThis.__DSH_TRANSPORT__ = { ownsHost: true, streamBaseUrl: 'http://127.0.0.1:19387' }
+    try {
+      prefsServer['dsh-music-playback'] = JSON.stringify({
+        kind: 'local', scope: { kind: 'library' }, id: '0', name: 'a.mp3', position: 12, duration: 120, ts: Date.now(),
+      })
+      factory = null; registered = []
+      vi.resetModules()
+      await bootClient()
+      await act(async () => { await new Promise((r) => setTimeout(r, 0)) })
+
+      const bar = registered.find((r) => r.id === 'music-player-plus-bar').elementFactory()
+      const { div, unmount } = mount(bar)
+      const btn = [...div.querySelectorAll('.dsh-music-bar-btn')].find((b) => b.title === '播放/暂停')
+      act(() => { btn.dispatchEvent(new MouseEvent('click', { bubbles: true })) })
+
+      const el = audioInstances.find((a) => String(a.src).startsWith('http://127.0.0.1:19387/'))
+      expect(el).toBeTruthy()
+      // 关键：dsh-app:// 的转发响应会剥掉 content-length → audio.seekable 为空 → 断点续播
+      // 静默失效；直连真实 HTTP origin 才有完整的 Range/长度信息。
+      expect(el.src).toBe('http://127.0.0.1:19387/dsh-music-plus/0')
+      // 本机媒体此时跨源，必须 anonymous + Host 的 ACAO，否则频谱（captureStream）会被判 tainted
+      expect(el.crossOrigin).toBe('anonymous')
+      unmount()
+    } finally {
+      delete globalThis.__DSH_TRANSPORT__
+    }
   })
 
   it('频谱画布在右侧控制组里（紧贴时长），歌名另有可省略号的文字层 —— 回归：长歌名被频谱遮挡', async () => {
