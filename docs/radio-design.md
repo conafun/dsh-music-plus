@@ -129,6 +129,23 @@
 5. **状态文件损坏/不可写**：退化成空用户层，内置库照常可用（持久化尽力而为）。
 6. **CORS**：电台流直连播放不需要 CORS；只有频谱（captureStream tap）在未开 CORS 的源上可能不显示，**播放不受影响**（与播客一致）。
 7. **HTTP 源**：DSH GUI 在 `http://127.0.0.1` 下，所以 http 流不会被混合内容拦截；若将来用 https 提供服务，http 流会被浏览器拦掉。
+8. **桌面版（Electron）的媒体链路 —— 与浏览器版不同，改这块前务必先读这一条**：
+   桌面版把页面放在 `dsh-app://` 自定义协议下，插件的所有 HTTP 请求都由 Electron 主进程的
+   `protocol.handle` → `forwardWebRequest` 转发到本地 Host。**该转发会剥掉 `content-length`**
+   （`WITHHELD_RESPONSE_HEADERS`），Chromium 因而无法确定媒体总长度 → `audio.seekable` 为空 →
+   设置 `currentTime` **静默失效**。表现：**从头播放正常，但断点续播 / 拖动进度条毫无反应**。
+   - Host 自己的 Range 实现没问题（实测 `bytes=0-`、闭合区间、开放式区间都规范返回 206 + `Content-Range`），
+     问题只出在转发链路，所以**别去 Host 的 Range 逻辑里找 bug**。
+   - 正解：桌面 SDK 把真实本地 HTTP origin 挂在 `globalThis.__DSH_TRANSPORT__.streamBaseUrl` 上，
+     媒体地址必须改写成它、直连 Host（Range 与长度信息完整）。见 `lib/client.js` 的
+     `streamBase()` / `mediaUrl()` / `setMediaSrc()`；浏览器里没有这个全局，行为保持原样。
+   - 本机媒体此时是**跨源**：`<audio>` 要带 `crossOrigin="anonymous"`，且 Host 的媒体路由要回
+     `Access-Control-Allow-Origin`（见 `lib/index.js` 的 `MEDIA_CORS_HEADERS`），否则
+     `captureStream` 的频谱会被判为 tainted 而静音。
+   - **电台 / 播客的外站地址绝不能加 `crossOrigin`** —— 没开 CORS 的源会直接放不出声。所以
+     `setMediaSrc` 只对本机 Host 媒体开启，并在 CORS 失败时允许不带 `crossOrigin` 降级重试一次。
+   - 副作用：Host 半的 CORS 头只在应用**启动时**加载，因此「只刷新页面」时续播可用、但本地音乐频谱
+     可能静止；**完整重启桌面应用**后两者都正常。
 
 ## 7. 测试
 

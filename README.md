@@ -130,6 +130,31 @@ dsh plugin --profile web add F:\DeepseekHarness\dsh-music-plus
 
 > **说明**：`dsh plugin add` 会把 `pnpm add <dir>` 转发到该 profile 目录；正因为本地目录里的 `package.json` `name` 已是 `dsh-music-plus`，所以它会作为独立插件 `dsh-music-plus` 安装，**不会**覆盖/和原版 `dsh-music-player` 混淆。
 
+### 2b. 桌面版（DSH Desktop / Electron）怎么装
+
+桌面版**不能**用上面那条命令，它会直接报错：
+
+```
+error: profile "desktop" is managed exclusively by the Electron application
+```
+
+桌面版有独立的 profile（`~/.dsh/profiles/desktop`）和自带的 pnpm 运行时，由应用独占管理，所以要用**桌面版自带的 CLI** 来装：
+
+```powershell
+# 把 <版本目录> 换成实际安装位置，通常在 %LOCALAPPDATA%\Programs\DeepSeek Harness
+& "<版本目录>\resources\runtime\cli\bin\dsh.cmd" plugin --profile desktop add <项目绝对路径>
+```
+
+例如：
+
+```powershell
+& "$env:LOCALAPPDATA\Programs\DeepSeek Harness\resources\runtime\cli\bin\dsh.cmd" plugin --profile desktop add F:\DeepseekHarness\dsh-music-plus
+```
+
+装完**刷新页面**即可（客户端半有热重载）；宿主半的新路由要**完整重启桌面应用**才生效。
+
+> 卸载同理，把 `add <路径>` 换成 `remove dsh-music-plus`。
+
 ### 3. 重启 DSH / 刷新 Web 页面
 
 重启 DSH 或刷新 `http://127.0.0.1:3080`，聊天区上方会出现「DSH音乐播放器」播放条；点播放条上的「列表」打开面板，左侧页签是 **本地音乐 / 播客 / 网络电台 / 系统配置**：
@@ -172,6 +197,9 @@ dsh plugin --profile web add F:\DeepseekHarness\dsh-music-plus
 ```powershell
 dsh plugin --profile <profile> remove dsh-music-plus
 ```
+
+> 桌面版同理，但要把 `dsh` 换成桌面版自带的 CLI（见上文 **2b**）：
+> `& "<版本目录>\resources\runtime\cli\bin\dsh.cmd" plugin --profile desktop remove dsh-music-plus`
 
 例如：
 ```powershell
