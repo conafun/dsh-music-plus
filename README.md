@@ -198,13 +198,13 @@ error: profile "desktop" is managed exclusively by the Electron application
 dsh plugin --profile <profile> remove dsh-music-plus
 ```
 
-> 桌面版同理，但要把 `dsh` 换成桌面版自带的 CLI（见上文 **2b**）：
-> `& "<版本目录>\resources\runtime\cli\bin\dsh.cmd" plugin --profile desktop remove dsh-music-plus`
-
 例如：
 ```powershell
 dsh plugin --profile web remove dsh-music-plus
 ```
+
+> 桌面版同理，但要把 `dsh` 换成桌面版自带的 CLI（见上文 **2b**）：
+> `& "<版本目录>\resources\runtime\cli\bin\dsh.cmd" plugin --profile desktop remove dsh-music-plus`
 
 > - 若卸载也被供应链策略拦截，同样加 `--config.minimumReleaseAge=0`：
 >   ```powershell
